@@ -13,11 +13,14 @@ import os
 
 BASE_URL = "https://life233.top"
 AUTH_URL = f"{BASE_URL}/api/auth/token"
-STOCK_CSV_PATH = r"all_stock_industry.csv"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+STOCK_CSV_PATH = os.path.join(SCRIPT_DIR, "all_stock_industry.csv")
+OUTPUT_DIR = os.path.join(os.path.expanduser("~"), "Documents", "news_reports")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 AUTH_PARAMS = {
     "username": "admin",
-    "password": "7ac117d63b4b25369703699267104fb4dcf192cb",
+    "password": "aa123aaqqA@",
 }
 
 
@@ -145,15 +148,14 @@ def generate_report(
         reverse=True,
     )[:10]
 
+    # 构建 sector_code -> sector_name 的快速查找表
+    sector_code_to_name = {}
+    for stock_code, sectors in stock_to_sector.items():
+        for s in sectors:
+            sector_code_to_name[s["sector_code"]] = s["sector_name"]
+
     for i, (sector_code, stats) in enumerate(sorted_sectors, 1):
-        sector_name = next(
-            (
-                s["sector_name"]
-                for s in stock_to_sector.values()
-                if any(ss["sector_code"] == sector_code for ss in s)
-            ),
-            sector_code,
-        )
+        sector_name = sector_code_to_name.get(sector_code, sector_code)
         heat = calculate_heat(stats["count"], stats["comments"], stats["shares"])
         lines.append(f"| {i} | {sector_name} | {stats['count']} | {heat} |\n")
 
@@ -230,7 +232,7 @@ def main():
     sector_stats, stock_stats, keywords = analyze_news(news_items, stock_to_sector)
 
     output_path = (
-        args.output or f"news_report_{args.type}_{datetime.now().strftime('%Y%m%d')}.md"
+        args.output or os.path.join(OUTPUT_DIR, f"news_report_{args.type}_{datetime.now().strftime('%Y%m%d')}.md")
     )
     report = generate_report(
         args.type, news_items, sector_stats, stock_stats, stock_to_sector, output_path
