@@ -98,3 +98,15 @@ def execute_lottery(request: str) -> str:
     params = lottery.parse_request(request)
     result = lottery.run_simulation(params)
     return lottery.format_output(result, params)
+
+
+if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) > 1:
+        request = " ".join(sys.argv[1:])
+    else:
+        request = "前区1-35选5，后区1-12选2"
+
+    result = execute_lottery(request)
+    print(result)
