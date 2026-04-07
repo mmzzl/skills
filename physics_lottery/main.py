@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from .lottery import (
+from lottery import (
     LotteryConfig,
     LotteryRunner,
     UnrecoverableError,

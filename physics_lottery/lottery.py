@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 import time
 
-from .physics import (
+from physics import (
     Ball,
     Container,
     AirflowField,
