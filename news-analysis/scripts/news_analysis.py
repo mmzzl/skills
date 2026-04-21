@@ -29,8 +29,9 @@ NVIDIA_API_KEY = "nvapi-V5TbOAatiBtMXlBqkO5NTz4eFh3JMRTiX-PcLuSF2bUMrNSQiLEyiwnO
 NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
 NVIDIA_MODEL = "moonshotai/kimi-k2.5"
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # CSV 文件路径
-CSV_FILE = "all_stock_industry.csv"
+CSV_FILE = os.path.join(BASE_DIR, "all_stock_industry.csv")
 
 # ==================== 初始化 ====================
 
@@ -103,7 +104,7 @@ def call_ai_analysis(prompt):
             "chat_template_kwwargs": {"thinking": True}
         }
 
-        response = requests.post(NVIDIA_API_URL, headers=headers, json=payload, timeout=60)
+        response = requests.post(NVIDIA_API_URL, headers=headers, json=payload, timeout=600)
         result = response.json()
 
         if "choices" in result and len(result["choices"]) > 0:
