@@ -430,19 +430,19 @@ def call_ai_analysis(prompt):
 cd scripts
 
 # 每日新闻分析（默认）
-python news_analysis.py
+py -3.12 news_analysis.py
 
 # 每周新闻分析
-python news_analysis.py --type weekly
+py -3.12 news_analysis.py --type weekly
 
 # 每月新闻分析
-python news_analysis.py --type monthly
+py -3.12 news_analysis.py --type monthly
 
 # 保存报告到文件
-python news_analysis.py --type daily -o report.txt
+py -3.12 news_analysis.py --type daily -o report.txt
 
 # 查看帮助
-python news_analysis.py --help
+py -3.12 news_analysis.py --help
 ```
 
 ### 命令行参数

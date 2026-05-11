@@ -1,0 +1,680 @@
+{
+  "nodes": [
+    {
+      "id": "airflow-simulation_spec",
+      "label": "Airflow Simulation Specification",
+      "file_type": "document",
+      "source_file": "openspec/changes/archive/2026-04-08-physical-lottery-simulator/specs/airflow-simulation/spec.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "lottery-selection_spec",
+      "label": "Lottery Selection Specification",
+      "file_type": "document",
+      "source_file": "openspec/changes/archive/2026-04-08-physical-lottery-simulator/specs/lottery-selection/spec.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "physics-engine_spec",
+      "label": "Physics Engine Specification",
+      "file_type": "document",
+      "source_file": "openspec/changes/archive/2026-04-08-physical-lottery-simulator/specs/physics-engine/spec.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "lottery-physics_skill",
+      "label": "Lottery Physics Skill",
+      "file_type": "document",
+      "source_file": "skills/lottery-physics/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "stock_ma_filter_skill",
+      "label": "Stock MA Filter Skill",
+      "file_type": "document",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "lottery_predictor",
+      "label": "Lottery Predictor",
+      "file_type": "code",
+      "source_file": "lottery-predictor/lottery_predictor.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "news_analysis",
+      "label": "News Analysis Script",
+      "file_type": "code",
+      "source_file": "news-analysis/scripts/news_analysis.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "physics_lottery_lottery",
+      "label": "Lottery Selection Logic",
+      "file_type": "code",
+      "source_file": "physics_lottery/lottery.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "physics_lottery_main",
+      "label": "Physical Lottery CLI",
+      "file_type": "code",
+      "source_file": "physics_lottery/main.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "physics_lottery_physics",
+      "label": "Core Physics Engine",
+      "file_type": "code",
+      "source_file": "physics_lottery/physics.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "lottery_runner",
+      "label": "Lottery Physics Runner",
+      "file_type": "code",
+      "source_file": "skills/lottery-physics/scripts/lottery_runner.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "ma_filter",
+      "label": "Stock MA Filter Script",
+      "file_type": "code",
+      "source_file": "stock-ma-filter/scripts/ma_filter.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "create_stock_pptx",
+      "label": "Stock PPTX Generator",
+      "file_type": "code",
+      "source_file": "create_stock_pptx.js",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "Ball",
+      "label": "Ball Entity",
+      "file_type": "code",
+      "source_file": "physics_lottery/physics.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "Container",
+      "label": "Container Entity",
+      "file_type": "code",
+      "source_file": "physics_lottery/physics.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "AirflowField",
+      "label": "Airflow Field",
+      "file_type": "code",
+      "source_file": "physics_lottery/physics.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "LotteryConfig",
+      "label": "Lottery Configuration",
+      "file_type": "code",
+      "source_file": "physics_lottery/lottery.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "LotterySimulator",
+      "label": "Lottery Simulator",
+      "file_type": "code",
+      "source_file": "physics_lottery/lottery.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "LotteryRunner",
+      "label": "Lottery Runner",
+      "file_type": "code",
+      "source_file": "physics_lottery/lottery.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "UnrecoverableError",
+      "label": "Unrecoverable Error",
+      "file_type": "code",
+      "source_file": "physics_lottery/lottery.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "LotteryPhysics",
+      "label": "LotteryPhysics Class",
+      "file_type": "code",
+      "source_file": "skills/lottery-physics/scripts/lottery_runner.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "MongoDB",
+      "label": "MongoDB Database",
+      "file_type": "code",
+      "source_file": "stock-ma-filter/scripts/ma_filter.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "NVIDIA_API",
+      "label": "NVIDIA API Integration",
+      "file_type": "code",
+      "source_file": "news-analysis/scripts/news_analysis.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "GoldenCross",
+      "label": "Golden Cross Detection",
+      "file_type": "code",
+      "source_file": "stock-ma-filter/scripts/ma_filter.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "BullishAlignment",
+      "label": "Bullish Alignment Detection",
+      "file_type": "code",
+      "source_file": "stock-ma-filter/scripts/ma_filter.py",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "all_stock_industry_csv",
+      "label": "Stock Industry CSV",
+      "file_type": "document",
+      "source_file": "news-analysis/scripts/all_stock_industry.csv",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "hs300_stocks_csv",
+      "label": "HS300 Stocks CSV",
+      "file_type": "document",
+      "source_file": "stock-ma-filter/scripts/hs300_stocks.csv",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "airflow-simulation_spec",
+      "target": "AirflowField",
+      "references": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "openspec/changes/archive/2026-04-08-physical-lottery-simulator/specs/airflow-simulation/spec.md",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "EXTRACTED",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "lottery-selection_spec",
+      "target": "LotterySimulator",
+      "references": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "openspec/changes/archive/2026-04-08-physical-lottery-simulator/specs/lottery-selection/spec.md",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "EXTRACTED",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "lottery-selection_spec",
+      "target": "LotteryConfig",
+      "references": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "openspec/changes/archive/2026-04-08-physical-lottery-simulator/specs/lottery-selection/spec.md",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "EXTRACTED",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "physics-engine_spec",
+      "target": "Ball",
+      "references": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "openspec/changes/archive/2026-04-08-physical-lottery-simulator/specs/physics-engine/spec.md",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "EXTRACTED",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "physics-engine_spec",
+      "target": "Container",
+      "references": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "openspec/changes/archive/2026-04-08-physical-lottery-simulator/specs/physics-engine/spec.md",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "EXTRACTED",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "physics_lottery_lottery",
+      "target": "physics_lottery_physics",
+      "implements": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "physics_lottery/lottery.py",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "references",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "physics_lottery_main",
+      "target": "physics_lottery_lottery",
+      "calls": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "physics_lottery/main.py",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "references",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "lottery_runner",
+      "target": "physics_lottery_main",
+      "calls": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/lottery-physics/scripts/lottery_runner.py",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "references",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "lottery-physics_skill",
+      "target": "lottery_runner",
+      "references": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/lottery-physics/SKILL.md",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "EXTRACTED",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "LotteryPhysics",
+      "target": "physics_lottery_main",
+      "calls": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/lottery-physics/scripts/lottery_runner.py",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "references",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "lottery-physics_skill",
+      "target": "LotteryPhysics",
+      "references": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/lottery-physics/SKILL.md",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "EXTRACTED",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "ma_filter",
+      "target": "MongoDB",
+      "shares_data_with": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "stock-ma-filter/scripts/ma_filter.py",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "references",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "ma_filter",
+      "target": "NVIDIA_API",
+      "calls": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "stock-ma-filter/scripts/ma_filter.py",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "references",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "ma_filter",
+      "target": "GoldenCross",
+      "implements": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "stock-ma-filter/scripts/ma_filter.py",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "references",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "ma_filter",
+      "target": "BullishAlignment",
+      "implements": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "stock-ma-filter/scripts/ma_filter.py",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "references",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "stock_ma_filter_skill",
+      "target": "ma_filter",
+      "references": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "EXTRACTED",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "news_analysis",
+      "target": "NVIDIA_API",
+      "calls": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "news-analysis/scripts/news_analysis.py",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "references",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "news_analysis",
+      "target": "all_stock_industry_csv",
+      "shares_data_with": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "news-analysis/scripts/news_analysis.py",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "references",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "create_stock_pptx",
+      "target": "all_stock_industry_csv",
+      "reads": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "create_stock_pptx.js",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "references",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "lottery_predictor",
+      "target": "lottery_predictor",
+      "calls": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "lottery-predictor/lottery_predictor.py",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "references",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "lottery_predictor",
+      "target": "NVIDIA_API",
+      "calls": "INFERRED",
+      "confidence_score": 0.6,
+      "source_file": "lottery-predictor/lottery_predictor.py",
+      "source_location": null,
+      "weight": 1.0,
+      "relation": "references",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "LotterySimulator",
+      "target": "Ball",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "physics_lottery/lottery.py",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "LotterySimulator",
+      "target": "Container",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "physics_lottery/lottery.py",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "LotterySimulator",
+      "target": "AirflowField",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "physics_lottery/lottery.py",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "LotteryRunner",
+      "target": "LotterySimulator",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "physics_lottery/lottery.py",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "LotteryConfig",
+      "target": "LotterySimulator",
+      "relation": "configures",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "physics_lottery/lottery.py",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "UnrecoverableError",
+      "target": "LotterySimulator",
+      "relation": "exception_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "physics_lottery/lottery.py",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "ma_filter",
+      "target": "hs300_stocks_csv",
+      "relation": "reads",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "stock-ma-filter/scripts/ma_filter.py",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "news_analysis",
+      "target": "news_analysis",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "news-analysis/scripts/news_analysis.py",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "lottery-physics_skill",
+      "target": "stock_ma_filter_skill",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.5,
+      "source_file": "skills/lottery-physics/SKILL.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "physical_lottery_system",
+      "label": "Physical Lottery System",
+      "nodes": [
+        "physics_lottery_physics",
+        "physics_lottery_lottery",
+        "physics_lottery_main",
+        "lottery_runner",
+        "LotteryPhysics",
+        "LotteryConfig",
+        "LotterySimulator",
+        "LotteryRunner",
+        "Ball",
+        "Container",
+        "AirflowField",
+        "UnrecoverableError"
+      ],
+      "relation": "implement",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "physics_lottery/"
+    },
+    {
+      "id": "stock_ma_filter_system",
+      "label": "Stock MA Filter System",
+      "nodes": [
+        "stock_ma_filter_skill",
+        "ma_filter",
+        "MongoDB",
+        "NVIDIA_API",
+        "GoldenCross",
+        "BullishAlignment",
+        "hs300_stocks_csv"
+      ],
+      "relation": "implement",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "stock-ma-filter/"
+    },
+    {
+      "id": "news_analysis_system",
+      "label": "News Analysis System",
+      "nodes": [
+        "news_analysis",
+        "NVIDIA_API",
+        "all_stock_industry_csv"
+      ],
+      "relation": "implement",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.9,
+      "source_file": "news-analysis/scripts/"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

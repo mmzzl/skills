@@ -1,0 +1,912 @@
+{
+  "nodes": [
+    {
+      "id": "agents_md",
+      "label": "AGENTS.md Repository Guidance",
+      "file_type": "document",
+      "source_file": "AGENTS.md",
+      "source_location": null
+    },
+    {
+      "id": "skill_directory",
+      "label": "Skill Directory",
+      "file_type": "concept",
+      "source_file": "AGENTS.md",
+      "source_location": "line 4",
+      "rationale": "Each skill should be in its own independent directory to maintain separation and avoid conflicting dependencies"
+    },
+    {
+      "id": "lottery_predictor",
+      "label": "Lottery Predictor Skill",
+      "file_type": "skill",
+      "source_file": "lottery-predictor/SKILL.md",
+      "source_location": null
+    },
+    {
+      "id": "news_analysis",
+      "label": "News Analysis Skill",
+      "file_type": "skill",
+      "source_file": "news-analysis/SKILL.md",
+      "source_location": null
+    },
+    {
+      "id": "stock_ma_filter",
+      "label": "Stock MA Filter Skill",
+      "file_type": "skill",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": null
+    },
+    {
+      "id": "lottery_physics",
+      "label": "Lottery Physics Skill",
+      "file_type": "skill",
+      "source_file": "skills/lottery-physics/SKILL.md",
+      "source_location": null
+    },
+    {
+      "id": "physics_lottery_module",
+      "label": "Physics Lottery Module",
+      "file_type": "module",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-physics-skill/design.md",
+      "source_location": "line 6",
+      "rationale": "Existing physics engine that provides 3D physical lottery simulation, separate from skill wrapper for maintainability"
+    },
+    {
+      "id": "skill_md",
+      "label": "SKILL.md",
+      "file_type": "document",
+      "source_file": "AGENTS.md",
+      "source_location": "line 6"
+    },
+    {
+      "id": "executable_script",
+      "label": "Executable Script",
+      "file_type": "concept",
+      "source_file": "AGENTS.md",
+      "source_location": "line 7"
+    },
+    {
+      "id": "requirements_txt",
+      "label": "requirements.txt",
+      "file_type": "file",
+      "source_file": "AGENTS.md",
+      "source_location": "line 8"
+    },
+    {
+      "id": "pytest_test",
+      "label": "Pytest Test",
+      "file_type": "file",
+      "source_file": "AGENTS.md",
+      "source_location": "line 9"
+    },
+    {
+      "id": "monorepo_build_system",
+      "label": "Monorepo Build System",
+      "file_type": "concept",
+      "source_file": "AGENTS.md",
+      "source_location": "line 10",
+      "rationale": "Not used - each skill runs independently, avoiding cross-skill dependency conflicts"
+    },
+    {
+      "id": "pip_install",
+      "label": "Pip Install Command",
+      "file_type": "concept",
+      "source_file": "AGENTS.md",
+      "source_location": "line 12-14",
+      "rationale": "Install requirements only for the skill being used to avoid conflicting package versions across skills"
+    },
+    {
+      "id": "hyphenated_directory",
+      "label": "Hyphenated Directory",
+      "file_type": "concept",
+      "source_file": "AGENTS.md",
+      "source_location": "line 46",
+      "rationale": "Cannot be imported as Python modules, must execute script files directly"
+    },
+    {
+      "id": "cache_file",
+      "label": "Cache File",
+      "file_type": "concept",
+      "source_file": "AGENTS.md",
+      "source_location": "line 45-47",
+      "rationale": "Downloaded data cached locally to avoid repeated network calls; may become stale if source format changes"
+    },
+    {
+      "id": "lottery_predictor_py",
+      "label": "lottery_predictor.py",
+      "file_type": "file",
+      "source_file": "lottery-predictor/SKILL.md",
+      "source_location": "line 50"
+    },
+    {
+      "id": "predict_next_draw",
+      "label": "predict_next_draw Function",
+      "file_type": "function",
+      "source_file": "lottery-predictor/SKILL.md",
+      "source_location": "line 24"
+    },
+    {
+      "id": "remote_csv_download",
+      "label": "Remote CSV Download",
+      "file_type": "concept",
+      "source_file": "lottery-predictor/SKILL.md",
+      "source_location": "line 14-15",
+      "rationale": "Downloads lottery data from remote URL, cached locally to prevent repeated downloads"
+    },
+    {
+      "id": "probability_distribution",
+      "label": "Probability Distribution",
+      "file_type": "concept",
+      "source_file": "lottery-predictor/SKILL.md",
+      "source_location": "line 17-18",
+      "rationale": "Uses historical frequency to calculate relative probability for each position candidate numbers"
+    },
+    {
+      "id": "exclusion_rule",
+      "label": "Exclusion Rule",
+      "file_type": "concept",
+      "source_file": "lottery-predictor/SKILL.md",
+      "source_location": "line 16",
+      "rationale": "Excludes numbers that appeared in the most recent draw for each position"
+    },
+    {
+      "id": "standard_library_only",
+      "label": "Standard Library Only",
+      "file_type": "design_decision",
+      "source_file": "lottery-predictor/SKILL.md",
+      "source_location": "line 21",
+      "rationale": "Uses only urllib.request, csv, collections to keep dependencies minimal"
+    },
+    {
+      "id": "news_api",
+      "label": "News API",
+      "file_type": "api",
+      "source_file": "news-analysis/SKILL.md",
+      "source_location": "line 14-19"
+    },
+    {
+      "id": "api_authentication",
+      "label": "API Authentication",
+      "file_type": "concept",
+      "source_file": "news-analysis/SKILL.md",
+      "source_location": "line 29-42",
+      "rationale": "Requires login to get access_token before calling news endpoints"
+    },
+    {
+      "id": "pagination",
+      "label": "Pagination",
+      "file_type": "concept",
+      "source_file": "news-analysis/SKILL.md",
+      "source_location": "line 46-68",
+      "rationale": "News API returns paginated data, must loop through pages to get all items"
+    },
+    {
+      "id": "sector_mapping",
+      "label": "Sector Mapping",
+      "file_type": "concept",
+      "source_file": "news-analysis/SKILL.md",
+      "source_location": "line 71-92",
+      "rationale": "stockList contains sector codes not stock codes, requires mapping to get sector names"
+    },
+    {
+      "id": "stock_to_sector_mapping",
+      "label": "Stock to Sector Mapping",
+      "file_type": "concept",
+      "source_file": "news-analysis/SKILL.md",
+      "source_location": "line 94-100"
+    },
+    {
+      "id": "heat_calculation",
+      "label": "Heat Calculation",
+      "file_type": "concept",
+      "source_file": "news-analysis/SKILL.md",
+      "source_location": "line 108",
+      "rationale": "Formula: heat = count * 10 + comments * 2 + shares * 5"
+    },
+    {
+      "id": "all_stock_industry_csv",
+      "label": "all_stock_industry.csv",
+      "file_type": "file",
+      "source_file": "news-analysis/SKILL.md",
+      "source_location": "line 73"
+    },
+    {
+      "id": "nvidia_api",
+      "label": "NVIDIA API",
+      "file_type": "api",
+      "source_file": "news-analysis/SKILL.md",
+      "source_location": "line 301-344"
+    },
+    {
+      "id": "ai_analysis_module",
+      "label": "AI Analysis Module",
+      "file_type": "module",
+      "source_file": "news-analysis/SKILL.md",
+      "source_location": "line 299-382"
+    },
+    {
+      "id": "lottery_physics_design",
+      "label": "Lottery Physics Skill Design",
+      "file_type": "document",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-physics-skill/design.md",
+      "source_location": null
+    },
+    {
+      "id": "subprocess_call",
+      "label": "Subprocess Call",
+      "file_type": "design_decision",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-physics-skill/design.md",
+      "source_location": "line 32-34",
+      "rationale": "Chosen over direct import to keep physics engine independent and avoid adding dependencies"
+    },
+    {
+      "id": "natural_language_parsing",
+      "label": "Natural Language Parameter Parsing",
+      "file_type": "concept",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-physics-skill/design.md",
+      "source_location": "line 42-47"
+    },
+    {
+      "id": "formatted_output",
+      "label": "Formatted Output",
+      "file_type": "concept",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-physics-skill/design.md",
+      "source_location": "line 49-55"
+    },
+    {
+      "id": "parameter_parsing_failure",
+      "label": "Parameter Parsing Failure",
+      "file_type": "risk",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-physics-skill/design.md",
+      "source_location": "line 61"
+    },
+    {
+      "id": "physics_engine_timeout",
+      "label": "Physics Engine Timeout",
+      "file_type": "risk",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-physics-skill/design.md",
+      "source_location": "line 62",
+      "rationale": "Set CLI timeout 60s to prevent indefinite waiting"
+    },
+    {
+      "id": "lottery_physics_spec",
+      "label": "Lottery Physics Skill Specification",
+      "file_type": "document",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-physics-skill/specs/lottery-physics-skill/spec.md",
+      "source_location": null
+    },
+    {
+      "id": "natural_language_lottery_request",
+      "label": "Natural Language Lottery Request",
+      "file_type": "requirement",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-physics-skill/specs/lottery-physics-skill/spec.md",
+      "source_location": "line 3-20"
+    },
+    {
+      "id": "simulation_execution",
+      "label": "Simulation Execution",
+      "file_type": "requirement",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-physics-skill/specs/lottery-physics-skill/spec.md",
+      "source_location": "line 22-35"
+    },
+    {
+      "id": "formatted_output_requirement",
+      "label": "Formatted Output Requirement",
+      "file_type": "requirement",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-physics-skill/specs/lottery-physics-skill/spec.md",
+      "source_location": "line 37-50"
+    },
+    {
+      "id": "lottery_skill_code_extraction_spec",
+      "label": "Lottery Skill Code Extraction Specification",
+      "file_type": "document",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-skill-code-extraction/specs/lottery-skill-code/spec.md",
+      "source_location": null
+    },
+    {
+      "id": "code_extraction",
+      "label": "Code Extraction to External Module",
+      "file_type": "requirement",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-skill-code-extraction/specs/lottery-skill-code/spec.md",
+      "source_location": "line 3-12",
+      "rationale": "Extract skill code from SKILL.md into external Python module for better maintainability"
+    },
+    {
+      "id": "lottery_runner_py",
+      "label": "lottery_runner.py",
+      "file_type": "file",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-skill-code-extraction/specs/lottery-skill-code/spec.md",
+      "source_location": "line 4"
+    },
+    {
+      "id": "skill_md_reference",
+      "label": "SKILL.md External Script Reference",
+      "file_type": "requirement",
+      "source_file": "openspec/changes/archive/2026-04-08-lottery-skill-code-extraction/specs/lottery-skill-code/spec.md",
+      "source_location": "line 14-22"
+    },
+    {
+      "id": "lottery_physics_skill_md",
+      "label": "Lottery Physics SKILL.md",
+      "file_type": "document",
+      "source_file": "skills/lottery-physics/SKILL.md",
+      "source_location": null
+    },
+    {
+      "id": "natural_language_interface",
+      "label": "Natural Language Interface",
+      "file_type": "feature",
+      "source_file": "skills/lottery-physics/SKILL.md",
+      "source_location": "line 3",
+      "rationale": "Wraps physics_lottery module to provide natural language interface"
+    },
+    {
+      "id": "seed_for_reproducibility",
+      "label": "Seed for Reproducibility",
+      "file_type": "feature",
+      "source_file": "skills/lottery-physics/SKILL.md",
+      "source_location": "line 23"
+    },
+    {
+      "id": "lottery_physics_class",
+      "label": "LotteryPhysics Class",
+      "file_type": "class",
+      "source_file": "skills/lottery-physics/SKILL.md",
+      "source_location": "line 54-57"
+    },
+    {
+      "id": "execute_lottery",
+      "label": "execute_lottery Function",
+      "file_type": "function",
+      "source_file": "skills/lottery-physics/SKILL.md",
+      "source_location": "line 53"
+    },
+    {
+      "id": "timeout_handling",
+      "label": "Timeout Handling",
+      "file_type": "error_handling",
+      "source_file": "skills/lottery-physics/SKILL.md",
+      "source_location": "line 59-65"
+    },
+    {
+      "id": "stock_ma_filter_skill_md",
+      "label": "Stock MA Filter SKILL.md",
+      "file_type": "document",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": null
+    },
+    {
+      "id": "golden_cross_signal",
+      "label": "Golden Cross Signal",
+      "file_type": "concept",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": "line 59-68",
+      "rationale": "MA5 crosses above MA20, indicating short-term trend strengthening"
+    },
+    {
+      "id": "bullish_alignment",
+      "label": "Bullish Alignment",
+      "file_type": "concept",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": "line 70-79",
+      "rationale": "MA5 > MA10 > MA20 with price above MA5, indicating established uptrend"
+    },
+    {
+      "id": "ma5_calculation",
+      "label": "MA5 Calculation",
+      "file_type": "concept",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": "line 51-55"
+    },
+    {
+      "id": "ma10_calculation",
+      "label": "MA10 Calculation",
+      "file_type": "concept",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": "line 51-55"
+    },
+    {
+      "id": "ma20_calculation",
+      "label": "MA20 Calculation",
+      "file_type": "concept",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": "line 51-55"
+    },
+    {
+      "id": "mongodb_data_source",
+      "label": "MongoDB Data Source",
+      "file_type": "database",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": "line 21-28"
+    },
+    {
+      "id": "hs300_stocks",
+      "label": "HS300 Stocks",
+      "file_type": "data",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": "line 179-202"
+    },
+    {
+      "id": "zz500_stocks",
+      "label": "ZZ500 Stocks",
+      "file_type": "data",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": "line 14-17"
+    },
+    {
+      "id": "all_a_shares",
+      "label": "All A Shares",
+      "file_type": "data",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": "line 14-17"
+    },
+    {
+      "id": "ma_filter_py",
+      "label": "ma_filter.py",
+      "file_type": "file",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": "line 85"
+    },
+    {
+      "id": "detect_golden_cross",
+      "label": "detect_golden_cross Function",
+      "file_type": "function",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": "line 238-264"
+    },
+    {
+      "id": "detect_bullish_alignment",
+      "label": "detect_bullish_alignment Function",
+      "file_type": "function",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": "line 266-291"
+    },
+    {
+      "id": "ai_market_analysis",
+      "label": "AI Market Analysis",
+      "file_type": "feature",
+      "source_file": "stock-ma-filter/SKILL.md",
+      "source_location": "line 293-307"
+    },
+    {
+      "id": "performance_constraints",
+      "label": "Performance Hard Constraints",
+      "file_type": "policy",
+      "source_file": "AGENTS.md",
+      "source_location": "line 80-86",
+      "rationale": "Binary storage required, no repeated CSV parsing, vectorized computation, preloaded backtest data, <8GB memory, <2s per day backtest"
+    }
+  ],
+  "edges": [
+    {
+      "source": "agents_md",
+      "target": "skill_directory",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "agents_md",
+      "target": "lottery_predictor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "agents_md",
+      "target": "news_analysis",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "agents_md",
+      "target": "stock_ma_filter",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "agents_md",
+      "target": "lottery_physics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "agents_md",
+      "target": "skill_md",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "agents_md",
+      "target": "executable_script",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "agents_md",
+      "target": "requirements_txt",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "agents_md",
+      "target": "pytest_test",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "agents_md",
+      "target": "monorepo_build_system",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8
+    },
+    {
+      "source": "agents_md",
+      "target": "pip_install",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "agents_md",
+      "target": "hyphenated_directory",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "agents_md",
+      "target": "cache_file",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_predictor",
+      "target": "lottery_predictor_py",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_predictor",
+      "target": "predict_next_draw",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_predictor",
+      "target": "remote_csv_download",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_predictor",
+      "target": "probability_distribution",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_predictor",
+      "target": "exclusion_rule",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_predictor",
+      "target": "standard_library_only",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "news_analysis",
+      "target": "news_api",
+      "relation": "uses",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "news_analysis",
+      "target": "api_authentication",
+      "relation": "requires",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "news_analysis",
+      "target": "pagination",
+      "relation": "requires",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "news_analysis",
+      "target": "sector_mapping",
+      "relation": "requires",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "news_analysis",
+      "target": "stock_to_sector_mapping",
+      "relation": "requires",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "news_analysis",
+      "target": "heat_calculation",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "news_analysis",
+      "target": "all_stock_industry_csv",
+      "relation": "uses",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "news_analysis",
+      "target": "nvidia_api",
+      "relation": "uses",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "news_analysis",
+      "target": "ai_analysis_module",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "physics_lottery_module",
+      "target": "lottery_physics",
+      "relation": "wrapped_by",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_design",
+      "target": "physics_lottery_module",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_design",
+      "target": "subprocess_call",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_design",
+      "target": "natural_language_parsing",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_design",
+      "target": "formatted_output",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_design",
+      "target": "parameter_parsing_failure",
+      "relation": "describes_risk",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_design",
+      "target": "physics_engine_timeout",
+      "relation": "describes_risk",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_spec",
+      "target": "natural_language_lottery_request",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_spec",
+      "target": "simulation_execution",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_spec",
+      "target": "formatted_output_requirement",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_skill_code_extraction_spec",
+      "target": "code_extraction",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_skill_code_extraction_spec",
+      "target": "lottery_runner_py",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_skill_code_extraction_spec",
+      "target": "skill_md_reference",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_skill_md",
+      "target": "physics_lottery_module",
+      "relation": "wraps",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_skill_md",
+      "target": "natural_language_interface",
+      "relation": "provides",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_skill_md",
+      "target": "seed_for_reproducibility",
+      "relation": "supports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_skill_md",
+      "target": "execute_lottery",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_skill_md",
+      "target": "lottery_physics_class",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "lottery_physics_skill_md",
+      "target": "timeout_handling",
+      "relation": "describes",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "stock_ma_filter_skill_md",
+      "target": "golden_cross_signal",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "stock_ma_filter_skill_md",
+      "target": "bullish_alignment",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "stock_ma_filter_skill_md",
+      "target": "ma5_calculation",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "stock_ma_filter_skill_md",
+      "target": "ma10_calculation",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "stock_ma_filter_skill_md",
+      "target": "ma20_calculation",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "stock_ma_filter_skill_md",
+      "target": "mongodb_data_source",
+      "relation": "uses",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "stock_ma_filter_skill_md",
+      "target": "hs300_stocks",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "stock_ma_filter_skill_md",
+      "target": "zz500_stocks",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "stock_ma_filter_skill_md",
+      "target": "all_a_shares",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "stock_ma_filter_skill_md",
+      "target": "ma_filter_py",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "stock_ma_filter_skill_md",
+      "target": "detect_golden_cross",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "stock_ma_filter_skill_md",
+      "target": "detect_bullish_alignment",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "stock_ma_filter_skill_md",
+      "target": "ai_market_analysis",
+      "relation": "provides",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    },
+    {
+      "source": "agents_md",
+      "target": "performance_constraints",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

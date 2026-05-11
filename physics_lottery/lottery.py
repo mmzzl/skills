@@ -1,5 +1,7 @@
 """Lottery selection logic with dual-zone support."""
 
+from __future__ import annotations
+
 import os
 import sys
 

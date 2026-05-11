@@ -123,40 +123,6 @@ def download_data():
             with open(CACHE_PATH, "w", encoding="utf-8-sig") as out:
                 for d in draws:
                     out.write(" ".join(str(n) for n in d) + "\n")
-    return draws
-        else:
-            raise FileNotFoundError
-    except FileNotFoundError:
-        # Fallback: use a larger built‑in sample dataset (extracted from known historical lines)
-        print("Using built-in fallback data (no network or insufficient cache).")
-        draws = [
-            [22, 24, 29, 31, 35, 4, 11],
-            [15, 22, 31, 34, 35, 5, 12],
-            [3, 4, 18, 23, 32, 1, 6],
-            [6, 10, 16, 17, 25, 2, 4],
-            [1, 9, 19, 20, 30, 2, 11],
-            [1, 16, 20, 23, 28, 3, 6],
-            [14, 16, 25, 26, 35, 4, 9],
-            [2, 8, 11, 21, 23, 4, 7],
-            [1, 3, 9, 19, 34, 9, 12],
-            [6, 8, 18, 29, 34, 9, 11],
-            [29, 32, 33, 34, 35, 9, 10],
-            [3, 12, 15, 29, 34, 7, 11],
-            [12, 17, 27, 29, 34, 6, 9],
-            [1, 2, 7, 29, 32, 6, 7],
-            [2, 8, 12, 13, 17, 11, 12],
-            [5, 11, 22, 34, 35, 2, 5],
-            [4, 5, 14, 25, 30, 8, 10],
-            [3, 6, 16, 19, 23, 1, 4],
-            [9, 13, 18, 28, 32, 2, 5],
-            [10, 22, 24, 31, 33, 3, 8],
-        ]
-        CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
-        with open(CACHE_PATH, "w", encoding="utf-8-sig") as out:
-            for d in draws:
-                out.write(" ".join(str(n) for n in d) + "\n")
-        return draws
-
     # If we successfully read the file but got no valid draws, fall back to built‑in data
     if not draws:
         print("Using built‑in fallback data (no network).")

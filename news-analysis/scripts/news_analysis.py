@@ -7,6 +7,7 @@
 
 import sys
 import io
+from openai import OpenAI
 # 设置标准输出编码为 UTF-8，解决 Windows 终端编码问题
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
@@ -19,15 +20,14 @@ import os
 # ==================== 配置区域 ====================
 
 # 新闻 API 配置
-NEWS_API_BASE = "https://life233.top"
+NEWS_API_BASE = "http://127.0.0.1"
 NEWS_LOGIN_URL = f"{NEWS_API_BASE}/api/auth/token"
 NEWS_USERNAME = "admin"
 NEWS_PASSWORD = "aa123aaqqA@"
 
 # NVIDIA API 配置
 NVIDIA_API_KEY = "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"
-NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-NVIDIA_MODEL = "moonshotai/kimi-k2.5"
+NVIDIA_MODEL = "deepseek-ai/deepseek-v4-pro"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # CSV 文件路径
@@ -37,6 +37,7 @@ CSV_FILE = os.path.join(BASE_DIR, "all_stock_industry.csv")
 
 # 读取板块股票映射数据
 df = pd.read_csv(CSV_FILE, encoding='utf-8')
+
 
 # ==================== 工具函数 ====================
 
@@ -87,33 +88,32 @@ def call_ai_analysis(prompt):
     Returns:
         AI 分析结果文本
     """
-    # 方式1: 使用 NVIDIA NIM API（推荐）
     try:
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {NVIDIA_API_KEY}"
-        }
-
-        payload = {
-            "model": NVIDIA_MODEL,
-            "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": 16384,
-            "temperature": 1.00,
-            "top_p": 1.00,
-            "stream": False,
-            "chat_template_kwwargs": {"thinking": True}
-        }
-
-        response = requests.post(NVIDIA_API_URL, headers=headers, json=payload, timeout=600)
-        result = response.json()
-
-        if "choices" in result and len(result["choices"]) > 0:
-            return result["choices"][0]["message"]["content"]
-        else:
-            print(f"NVIDIA API 返回异常: {result}")
+        client = OpenAI(
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key=NVIDIA_API_KEY
+        )
+        completion = client.chat.completions.create(
+            model=NVIDIA_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=1,
+            top_p=0.95,
+            max_tokens=16384,
+            extra_body={"chat_template_kwargs": {"thinking": False}},
+            stream=True
+        )
+        result = []
+        for chunk in completion:
+            if not getattr(chunk, "choices", None):
+                continue
+            if chunk.choices and chunk.choices[0].delta.content is not None:
+                content = chunk.choices[0].delta.content
+                print(content, end='', flush=True)
+                result.append(content)
+        return ''.join(result)
     except Exception as e:
         print(f"NVIDIA API 调用失败: {e}")
-    return "AI 分析暂时不可用，请检查 API 配置"
+        return "AI 分析暂时不可用，请检查 API 配置"
 
 
 def calc_heat(s):
