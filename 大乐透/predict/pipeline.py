@@ -185,23 +185,35 @@ def evaluate(model, X, Y, name="test"):
     """评估模型"""
     pred = model.predict(X)
     pred_int = postprocess(pred)
-
     n = len(Y)
+
     pos_hits = []
     for pos in range(7):
-        hits = sum(1 for i in range(n) if pred_int[i][pos] == Y[i][pos])
-        pos_hits.append(hits / n)
+        pos_hits.append(sum(1 for i in range(n) if pred_int[i][pos] == Y[i][pos]) / n)
 
     any_hits = [sum(1 for p in range(7) if pred_int[i][p] == Y[i][p]) for i in range(n)]
 
-    mae = np.mean(np.abs(pred - Y))
-    rmse = np.sqrt(np.mean((pred - Y) ** 2))
+    hit_2r1b = sum(
+        1 for i in range(n)
+        if sum(1 for p in range(5) if pred_int[i][p] == Y[i][p]) >= 2
+        and sum(1 for p in range(5, 7) if pred_int[i][p] == Y[i][p]) >= 1
+    ) / n
 
-    return {"pos_hits": pos_hits, "any_hits": any_hits, "mae": mae, "rmse": rmse}
+    mae = np.mean(np.abs(pred_int - Y))
+    rmse = np.sqrt(np.mean((pred_int - Y) ** 2))
+
+    return {
+        "pos_hits": pos_hits,
+        "any_hits": any_hits,
+        "hit_2r1b": hit_2r1b,
+        "mae": mae,
+        "rmse": rmse
+    }
 
 
 def postprocess(pred):
-    """后处理: 取整→裁剪→去重排序→补全"""
+    """后处理: 取整→裁剪→去重排序→同区间高频补全"""
+    PRIMES = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31}
     pred = np.atleast_2d(pred)
     result = []
     for row in pred:
@@ -210,12 +222,19 @@ def postprocess(pred):
 
         reds = sorted(set(reds))
         while len(reds) < 5:
-            for cand in range(1, 36):
+            odd_cnt = sum(1 for v in reds if v % 2 == 1)
+            zone1 = sum(1 for v in reds if v <= 12)
+            zone2 = sum(1 for v in reds if 13 <= v <= 24)
+            zone3 = sum(1 for v in reds if 25 <= v <= 35)
+            zones = [(zone1, 1, 12), (zone2, 13, 24), (zone3, 25, 35)]
+            target_zone = min(zones, key=lambda z: z[0])
+            lo, hi = target_zone[1], target_zone[2]
+            for cand in range(lo, hi + 1):
                 if cand not in reds:
                     reds.append(cand)
                     break
         reds = sorted(reds[:5])
-        blues = sorted([max(1, min(12, b)) for b in blues[:2]])
+        blues = sorted([max(1, min(12, round(b))) for b in blues[:2]])
         result.append(reds + blues)
     return np.array(result)
 
@@ -258,6 +277,7 @@ def main():
     print(f"  命中≥0: {sum(1 for h in res['any_hits'] if h>=0)/len(Y_test)*100:.1f}%")
     print(f"  命中≥1: {sum(1 for h in res['any_hits'] if h>=1)/len(Y_test)*100:.1f}%")
     print(f"  命中≥2: {sum(1 for h in res['any_hits'] if h>=2)/len(Y_test)*100:.1f}%")
+    print(f"  ≥2红+≥1蓝: {res['hit_2r1b']*100:.2f}%")
 
     res_val = evaluate(model, X_val, Y_val, "val")
     print(f"\nGA校验集 MAE: {res_val['mae']:.2f} (测试集 MAE: {res['mae']:.2f})")

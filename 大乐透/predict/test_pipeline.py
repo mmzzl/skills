@@ -25,3 +25,14 @@ def test_feature_keys_ordered():
         "红一区差分", "红二区差分", "红三区差分",
         "连号差分", "红蓝总合差分"
     ]
+
+
+def test_postprocess():
+    from pipeline import postprocess
+    import numpy as np
+    pred = np.array([[1.2, 2.7, 3.1, 4.9, 35.2, 1.6, 12.3]])
+    result = postprocess(pred)[0]
+    assert len(result) == 7
+    assert all(1 <= v <= 35 for v in result[:5])
+    assert all(1 <= v <= 12 for v in result[5:])
+    assert len(set(result[:5])) == 5
