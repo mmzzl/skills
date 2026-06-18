@@ -36,3 +36,21 @@ def test_postprocess():
     assert all(1 <= v <= 35 for v in result[:5])
     assert all(1 <= v <= 12 for v in result[5:])
     assert len(set(result[:5])) == 5
+
+
+def test_end_to_end():
+    from pipeline import load_draws, load_ga_pool, build_dataset, train_model, evaluate
+    draws = load_draws()
+    ga_pool = load_ga_pool()
+    assert len(draws) >= 2800
+    assert len(ga_pool) >= 10000
+
+    X_train, Y_train, sw, X_test, Y_test, _, _ = build_dataset(draws, ga_pool)
+    assert X_train.shape[0] > 60000
+    assert X_train.shape[1] == 36
+    assert Y_train.shape[1] == 7
+    assert len(sw) == X_train.shape[0]
+
+    model = train_model(X_train, Y_train, sw)
+    res = evaluate(model, X_test, Y_test)
+    assert 0 <= res["mae"] <= 10
