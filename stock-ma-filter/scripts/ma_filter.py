@@ -12,10 +12,12 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='repla
 
 import os
 import argparse
+from openai import OpenAI
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 import pandas as pd
 import requests
+
 
 # ==================== 配置区域 ====================
 
@@ -23,14 +25,14 @@ import requests
 MONGO_HOST = "121.37.47.63"
 MONGO_PORT = 27017
 MONGO_USER = "admin"
-MONGO_PASSWORD = "aa123aaqqA!"
+MONGO_PASSWORD = ""
 MONGO_DB = "eastmoney_news"
 MONGO_COLLECTION = "stock_kline"
 
 # NVIDIA API 配置
 NVIDIA_API_KEY = "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"
 NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-NVIDIA_MODEL = "moonshotai/kimi-k2.5"
+NVIDIA_MODEL = "deepseek-ai/deepseek-v4-pro"
 
 # 文件路径
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -56,13 +58,18 @@ INDEX_NAMES = {
 
 def get_mongo_collection():
     """获取MongoDB集合"""
-    client = MongoClient(
-        host=MONGO_HOST,
-        port=MONGO_PORT,
-        username=MONGO_USER,
-        password=MONGO_PASSWORD,
-        authSource="admin"
-    )
+    common_kwargs = {"serverSelectionTimeoutMS": 10000, "connectTimeoutMS": 10000, "socketTimeoutMS": 10000}
+    if not MONGO_PASSWORD or not MONGO_USER:
+        client = MongoClient(f"mongodb://{MONGO_HOST}:{MONGO_PORT}/", **common_kwargs)
+    else:
+        client = MongoClient(
+            host=MONGO_HOST,
+            port=MONGO_PORT,
+            username=MONGO_USER,
+            password=MONGO_PASSWORD,
+            authSource="admin",
+            **common_kwargs
+        )
     db = client[MONGO_DB]
     return db[MONGO_COLLECTION]
 
@@ -304,9 +311,9 @@ def filter_stocks(index_type='hs300', signal_type='all', use_ai=True):
     """
     index_name = INDEX_NAMES.get(index_type, "沪深300")
 
-    print("=" * 60)
-    print(f"双均线股票筛选 - {index_name}")
-    print("=" * 60)
+    print("=" * 60, flush=True)
+    print(f"双均线股票筛选 - {index_name}", flush=True)
+    print("=" * 60, flush=True)
 
     # 1. 获取股票代码列表
     print(f"\n[1/4] 获取{index_name}股票列表...")
@@ -509,28 +516,31 @@ def call_ai_analysis(golden_stocks, bullish_stocks, index_name="沪深300"):
 """
 
     try:
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {NVIDIA_API_KEY}"
-        }
-
-        payload = {
-            "model": NVIDIA_MODEL,
-            "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": 1024,
-            "temperature": 0.7
-        }
-
-        response = requests.post(NVIDIA_API_URL, headers=headers, json=payload, timeout=60)
-        result = response.json()
-
-        if "choices" in result and len(result["choices"]) > 0:
-            return result["choices"][0]["message"]["content"]
-        else:
-            return f"AI分析返回异常: {result}"
-
+        client = OpenAI(
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key=NVIDIA_API_KEY
+        )
+        completion = client.chat.completions.create(
+            model=NVIDIA_MODEL,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=1,
+            top_p=0.95,
+            max_tokens=16384,
+            extra_body={"chat_template_kwargs": {"thinking": False}},
+            stream=True
+        )
+        result = []
+        for chunk in completion:
+            if not getattr(chunk, "choices", None):
+                continue
+            if chunk.choices and chunk.choices[0].delta.content is not None:
+                content = chunk.choices[0].delta.content
+                print(content, end='', flush=True)
+                result.append(content)
+        return ''.join(result)
     except Exception as e:
-        return f"AI分析调用失败: {e}"
+        print(f"NVIDIA API 调用失败: {e}")
+        return "AI 分析暂时不可用，请检查 API 配置"
 
 
 # ==================== 主函数 ====================
@@ -557,7 +567,7 @@ def main():
                         help='禁用AI分析')
 
     args = parser.parse_args()
-
+    print("haha")
     # 执行筛选
     report = filter_stocks(
         index_type=args.index,
