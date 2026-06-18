@@ -11,6 +11,13 @@ def test_feature_values():
     assert feats["最大连号长度"] == 5
     assert feats["连号差分"] == 0  # 默认值
 
+def test_consecutive_groups():
+    from features import _count_consecutive_groups
+    assert _count_consecutive_groups([5, 6, 10, 15, 16]) == 2
+    assert _count_consecutive_groups([1, 2, 3, 4, 5]) == 1
+    assert _count_consecutive_groups([1, 3, 5, 7, 9]) == 0
+    assert _count_consecutive_groups([10, 11, 20, 21, 22]) == 2
+
 def test_feature_keys_ordered():
     keys = feature_keys()
     assert keys[-9:] == [

@@ -3,6 +3,8 @@
 所有函数输入: [红1, 红2, 红3, 红4, 红5, 蓝1, 蓝2]
 """
 
+import pandas as pd
+
 PRIMES = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31}
 
 def extract_features(combo):
@@ -39,7 +41,7 @@ def extract_features(combo):
 
     # === 第三部分: 双蓝静态 (8) ===
     feats["蓝和值"] = sum(b)
-    feats["蓝跨度"] = b[1] - b[0]
+    feats["蓝跨度"] = abs(b[1] - b[0])
     feats["蓝奇数"] = sum(1 for v in b if v % 2 == 1)
     feats["蓝偶数"] = sum(1 for v in b if v % 2 == 0)
     feats["蓝小号"] = sum(1 for v in b if 1 <= v <= 6)
@@ -61,12 +63,13 @@ def _count_consecutive_groups(arr):
     """统计连号组数, 如 [5,6, 10, 15,16] → 2"""
     cnt = 0
     i = 0
-    while i < len(arr) - 1:
-        if arr[i+1] == arr[i] + 1:
+    while i < len(arr):
+        j = i
+        while j + 1 < len(arr) and arr[j+1] == arr[j] + 1:
+            j += 1
+        if j - i >= 1:
             cnt += 1
-            i += 2
-        else:
-            i += 1
+        i = j + 1
     return cnt
 
 
@@ -92,7 +95,6 @@ def _odd_even_alternate(arr):
 
 def extract_features_batch(combos):
     """批量提取"""
-    import pandas as pd
     return pd.DataFrame([extract_features(c) for c in combos])
 
 
