@@ -43,8 +43,8 @@ def save_draws_csv(draws, path):
     print(f"已保存: {path} ({len(draws)} 期)")
 
 
-def load_data():
-    if os.path.exists(CACHE_FILE):
+def load_data(refresh=False):
+    if not refresh and os.path.exists(CACHE_FILE):
         try:
             with open(CACHE_FILE, encoding="utf-8-sig") as f:
                 reader = csv.reader(f)
@@ -58,6 +58,8 @@ def load_data():
                     return rows
         except (csv.Error, ValueError):
             pass
+    if refresh:
+        print("强制刷新缓存，重新下载...")
     text = download_data()
     draws = parse_draws(text)
     save_draws_csv(draws, CACHE_FILE)
@@ -297,9 +299,12 @@ def save_csv(data, path):
 
 
 def main():
+    import sys
+    refresh = "--refresh" in sys.argv
+
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    draws = load_data()
+    draws = load_data(refresh=refresh)
     print(f"共 {len(draws)} 期历史数据")
 
     pos_freq = build_position_freq(draws)
