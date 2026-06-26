@@ -83,65 +83,96 @@ def apply_delta(feats_dict, delta_dict):
     return feats_dict
 
 
-def build_dataset(draws, ga_pool, ga_filter_std=2.0):
+def generate_ga_ordered_features(ga_pool, block_size=100, rng_seed=42):
     """
-    构建训练/测试数据集
-    - 历史: 前2307训练, 后577测试
-    - GA: 随机64000训练, 16000校验
+    从GA池生成带完整差分特征的有序伪时序样本
+    :param ga_pool: 过滤后的GA样本列表
+    :param block_size: 每个伪时序块的长度（期数），越大生成效率越高
+    :param rng_seed: 随机种子，保证可复现
+    :return: 带完整特征的GA样本列表，每个元素是特征字典
+    """
+    rng = np.random.RandomState(rng_seed)
+    # 打乱GA池，避免重复
+    shuffled_ga = ga_pool.copy()
+    rng.shuffle(shuffled_ga)
+    
+    ga_features = []
+    # 切分成连续的伪时序块
+    total_blocks = len(shuffled_ga) // block_size
+    for block_idx in range(total_blocks):
+        # 取出当前块的连续样本
+        start = block_idx * block_size
+        end = start + block_size
+        current_block = shuffled_ga[start:end]
+        
+        # 逐期处理，和历史数据逻辑完全一致
+        for i, combo in enumerate(current_block):
+            feats = extract_features(combo)
+            # 第1期差分填0，和历史数据第1期处理一致
+            if i > 0:
+                delta = compute_delta(combo, current_block[i-1])
+                feats = apply_delta(feats, delta)
+            ga_features.append(feats)
+    
+    return ga_features
+
+
+def build_dataset(draws, ga_pool, ga_filter_std=2.0, ga_block_size=50):
+    """
+    构建训练/测试数据集：
+    - 训练集 100% 来自 GA 伪时序样本（无真实历史参与训练）
+    - 历史开奖仅做外部测试集，独立验证泛化能力
+    - 全部样本等权重 weight=1
     """
     n = len(draws)
-    train_n = 2307
+    test_n = 577
 
-    # 历史训练集 (第1期差分填0)
-    hist_train = draws[:train_n]
-    X_hist = []
-    Y_hist = []
-    for i, combo in enumerate(hist_train):
-        feats = extract_features(combo)
-        if i > 0:
-            delta = compute_delta(combo, draws[i-1])
-            feats = apply_delta(feats, delta)
-        X_hist.append(feats)
-        Y_hist.append(combo)
-
-    # 历史测试集
-    hist_test = draws[train_n:]
+    # ---------------------- 1. 历史开奖仅做测试集 ----------------------
+    hist_test = draws[-test_n:]
     X_test = []
     Y_test = []
     for i, combo in enumerate(hist_test):
         feats = extract_features(combo)
-        abs_idx = train_n + i
-        delta = compute_delta(combo, draws[abs_idx-1])
+        abs_idx = n - test_n + i
+        delta = compute_delta(combo, draws[abs_idx - 1])
         feats = apply_delta(feats, delta)
         X_test.append(feats)
         Y_test.append(combo)
 
-    # GA 池过滤: 2σ
-    filtered = filter_ga_pool(ga_pool, draws, ga_filter_std)
+    # ---------------------- 2. GA池：过滤 + 伪时序特征生成 ----------------------
+    filtered_ga = filter_ga_pool(ga_pool, draws, ga_filter_std)
+    print(f"GA池过滤后有效样本: {len(filtered_ga)} 组")
+
+    ga_full_features = generate_ga_ordered_features(filtered_ga, block_size=ga_block_size)
+    ga_labels = filtered_ga[:len(ga_full_features)]
+
     rng = np.random.RandomState(42)
-    rng.shuffle(filtered)
-    n_ga_train = min(64000, len(filtered))
-    ga_train_pool = filtered[:n_ga_train]
-    ga_val_pool = filtered[n_ga_train:n_ga_train+16000]
+    shuffle_idx = rng.permutation(len(ga_full_features))
+    ga_feats_shuffled = [ga_full_features[i] for i in shuffle_idx]
+    ga_labels_shuffled = [ga_labels[i] for i in shuffle_idx]
 
-    X_ga = [extract_features(c) for c in ga_train_pool]
-    Y_ga = ga_train_pool
+    n_ga_train = min(64000, len(ga_feats_shuffled))
+    X_ga_train = ga_feats_shuffled[:n_ga_train]
+    Y_ga_train = ga_labels_shuffled[:n_ga_train]
 
-    X_val = [extract_features(c) for c in ga_val_pool]
-    Y_val = ga_val_pool
+    n_ga_val = min(16000, len(ga_feats_shuffled) - n_ga_train)
+    X_ga_val = ga_feats_shuffled[n_ga_train:n_ga_train + n_ga_val]
+    Y_ga_val = ga_labels_shuffled[n_ga_train:n_ga_train + n_ga_val]
 
-    # 合并
-    X_train = pd.DataFrame(X_hist + X_ga, columns=feature_keys())
-    Y_train = np.array(Y_hist + Y_ga)
+    # ---------------------- 3. 组装 ----------------------
+    X_train = pd.DataFrame(X_ga_train, columns=feature_keys())
+    Y_train = np.array(Y_ga_train)
     X_test = pd.DataFrame(X_test, columns=feature_keys())
     Y_test = np.array(Y_test)
+    X_val = pd.DataFrame(X_ga_val, columns=feature_keys())
+    Y_val = np.array(Y_ga_val)
 
-    # 权重
-    sample_weight = np.array([38] * len(X_hist) + [1] * len(X_ga))
+    # 全部等权重 weight=1
+    sample_weight = np.ones(len(X_train))
 
     return (X_train, Y_train, sample_weight,
             X_test, Y_test,
-            pd.DataFrame(X_val), np.array(Y_val))
+            X_val, Y_val)
 
 
 def filter_ga_pool(pool, draws, std_thresh=2.0):
@@ -255,35 +286,46 @@ def predict_next(model, draw_t, draw_t1):
 
 
 def main():
-    print("加载数据...")
+    print("=" * 52)
+    print("  GA伪时序训练 + 真实历史独立验证")
+    print("=" * 52)
+    print("  训练集: 100% GA演化数据（伪时序分段）")
+    print("  测试集: 真实历史开奖后 577 期（仅验证）")
+    print("  权重:   全部等权重 weight=1")
+    print("=" * 52)
+
     draws = load_draws()
     ga_pool = load_ga_pool()
     print(f"历史: {len(draws)} 期, GA: {len(ga_pool)} 组")
 
     print("构建数据集...")
     (X_train, Y_train, sw, X_test, Y_test, X_val, Y_val) = build_dataset(draws, ga_pool)
-    print(f"训练: {X_train.shape}, 测试: {X_test.shape}, GA校验: {X_val.shape}")
+    print(f"GA训练: {X_train.shape}, GA校验: {X_val.shape}, 真实测试: {X_test.shape}")
 
     print("训练中...")
     t0 = time.time()
     model = train_model(X_train, Y_train, sw)
     print(f"训练完成: {time.time()-t0:.1f}s")
 
-    print("\n测试集评估:")
+    print("\n=== 真实历史测试集评估 ===")
     res = evaluate(model, X_test, Y_test)
     for i, name in enumerate(POS_NAMES):
         print(f"  {name}: {res['pos_hits'][i]*100:.2f}%")
     print(f"  MAE: {res['mae']:.2f}, RMSE: {res['rmse']:.2f}")
-    print(f"  命中≥0: {sum(1 for h in res['any_hits'] if h>=0)/len(Y_test)*100:.1f}%")
-    print(f"  命中≥1: {sum(1 for h in res['any_hits'] if h>=1)/len(Y_test)*100:.1f}%")
-    print(f"  命中≥2: {sum(1 for h in res['any_hits'] if h>=2)/len(Y_test)*100:.1f}%")
     print(f"  ≥2红+≥1蓝: {res['hit_2r1b']*100:.2f}%")
 
     res_val = evaluate(model, X_val, Y_val, "val")
-    print(f"\nGA校验集 MAE: {res_val['mae']:.2f} (测试集 MAE: {res['mae']:.2f})")
+    print(f"\n=== 分布偏移诊断 ===")
+    print(f"  GA校验集 MAE:   {res_val['mae']:.3f}")
+    print(f"  真实测试集 MAE: {res['mae']:.3f}")
     diff = abs(res_val['mae'] - res['mae'])
+    print(f"  分布偏移量:      {diff:.3f}")
     if diff > 0.5:
-        print("警告: GA/真实 MAE 差异偏大, 建议检查")
+        print("  [警告] GA与人造分布偏移偏大，建议调参")
+    elif diff > 0.2:
+        print("  [注意] 有可见偏移，可进一步优化")
+    else:
+        print("  [OK] GA分布与真实随机高度接近")
 
     print(f"\n最新一期: {draws[-1]}")
     pred = predict_next(model, draws[-1], draws[-2])
