@@ -13,6 +13,7 @@ import csv
 import random
 import time
 import sys
+from collections import Counter
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.path.join(BASE_DIR, "data_pool")
@@ -25,6 +26,7 @@ GENERATIONS = 120
 MUTATION_RATE = 0.25
 ELITE_COUNT = 1
 TARGET_COUNT = 100_000
+TOURNAMENT_SIZE = 3  # 锦标赛规模
 
 
 def random_individual(rng):
@@ -50,15 +52,19 @@ def crossover(p1, p2, rng):
         i1 = i2 = 0
         for i in range(n):
             if child1[i] == -1:
-                child1[i] = r1[i1]; i1 += 1
+                child1[i] = r1[i1]
+                i1 += 1
             if child2[i] == -1:
-                child2[i] = r2[i2]; i2 += 1
+                child2[i] = r2[i2]
+                i2 += 1
         return child1, child2
 
     red_c1, red_c2 = _ox(p1[:5], p2[:5])
     blue_c1, blue_c2 = _ox(p1[5:], p2[5:])
-    red_c1.sort(); red_c2.sort()
-    blue_c1.sort(); blue_c2.sort()
+    red_c1.sort()
+    red_c2.sort()
+    blue_c1.sort()
+    blue_c2.sort()
     return red_c1 + blue_c1, red_c2 + blue_c2
 
 
@@ -71,15 +77,27 @@ def mutate(ind, rng):
     for i in range(5, 7):
         if rng.random() < MUTATION_RATE:
             new[i] = rng.choice(list(BLUE_RANGE))
+    # 修复红球不重复
     reds = sorted(set(new[:5]))
     while len(reds) < 5:
-        reds.append(rng.choice([x for x in RED_RANGE if x not in reds]))
+        candidate = rng.choice([x for x in RED_RANGE if x not in reds])
+        reds.append(candidate)
     reds.sort()
+    # 修复蓝球不重复
     blues = sorted(set(new[5:]))
     while len(blues) < 2:
-        blues.append(rng.choice([x for x in BLUE_RANGE if x not in blues]))
+        candidate = rng.choice([x for x in BLUE_RANGE if x not in blues])
+        blues.append(candidate)
     blues.sort()
     return reds[:5] + blues[:2]
+
+
+def tournament_select(population, fitnesses, rng):
+    """锦标赛选择：优先挑选独特、高分个体作为父本"""
+    candidates = rng.sample(list(zip(population, fitnesses)), TOURNAMENT_SIZE)
+    # 按适应度降序，取最优
+    candidates.sort(key=lambda x: -x[1])
+    return candidates[0][0][:]
 
 
 def run_evolution():
@@ -94,21 +112,24 @@ def run_evolution():
     progress_ticks = max(1, GENERATIONS // 40)
 
     for gen in range(GENERATIONS):
-        counts = {}
-        for ind in population:
-            key = tuple(ind)
-            counts[key] = counts.get(key, 0) + 1
-
+        # 统计当前种群每个组合出现次数
+        pop_keys = [tuple(i) for i in population]
+        counts = Counter(pop_keys)
+        # 计算适应度：越稀有分数越高
         fitnesses = [1.0 / counts[tuple(ind)] for ind in population]
+
+        # 排序取精英
         ranked = sorted(enumerate(fitnesses), key=lambda x: -x[1])
-
         new_population = []
+        # 保留精英个体
         for j in range(ELITE_COUNT):
-            new_population.append(population[ranked[j][0]][:])
+            elite_idx = ranked[j][0]
+            new_population.append(population[elite_idx][:])
 
+        # 交配繁殖填充种群
         while len(new_population) < POPULATION_SIZE:
-            c1, c2 = rng.sample(range(len(population)), 2)
-            p1, p2 = population[c1], population[c2]
+            p1 = tournament_select(population, fitnesses, rng)
+            p2 = tournament_select(population, fitnesses, rng)
             child1, child2 = crossover(p1, p2, rng)
             child1 = mutate(child1, rng)
             child2 = mutate(child2, rng)
@@ -118,12 +139,14 @@ def run_evolution():
 
         population = new_population[:POPULATION_SIZE]
 
+        # 收集全新未出现过的个体
         for ind in population:
             key = tuple(ind)
             if key not in seen:
                 seen.add(key)
                 pool.append(ind)
 
+        # 进度条打印
         if gen % progress_ticks == 0 or gen == GENERATIONS - 1:
             bar = "=" * (gen // progress_ticks + 1) + "-" * (40 - gen // progress_ticks - 1)
             sys.stdout.write(f"\r  [{bar}] 第 {gen+1}/{GENERATIONS} 代, 已收集: {len(pool)} 组")
@@ -164,6 +187,7 @@ def main():
     print(f"  迭代代数: {GENERATIONS}")
     print(f"  变异率:   {MUTATION_RATE}")
     print(f"  精英保留: {ELITE_COUNT}")
+    print(f"  锦标赛规模: {TOURNAMENT_SIZE}")
     print(f"  目标样本: {TARGET_COUNT}")
     print(f"  外部数据: 无 (纯随机种子)")
     print("=" * 52)
@@ -172,14 +196,14 @@ def main():
 
     pool, seen, rng = run_evolution()
     elapsed = time.time() - start
-    print(f"\n演化完成: {elapsed:.1f}s, 生成 {len(pool)} 组 (去重: {len(seen)})")
+    print(f"\n演化完成: {elapsed:.1f}s, 生成 {len(pool)} 组 (全局唯一去重: {len(seen)})")
 
     if len(pool) < TARGET_COUNT:
         print(f"随机补足至 {TARGET_COUNT} 组...")
         pool = fill_to_target(pool, seen, rng)
 
     save_csv(pool, os.path.join(OUTPUT_DIR, "dlt_data_pool.csv"))
-    print(f"\n总共: {len(pool)} 组 | 去重: {len(set(tuple(p) for p in pool))} 组")
+    print(f"\n输出总量: {len(pool)} 组 | 全局唯一样本总数: {len(seen)} 组")
     print(f"总耗时: {time.time()-start:.1f}s")
 
 

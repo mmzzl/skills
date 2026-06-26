@@ -2,6 +2,8 @@
 大乐透号码组合 → 36维特征向量
 所有函数输入: [红1, 红2, 红3, 红4, 红5, 蓝1, 蓝2]
 """
+import io, sys
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 import pandas as pd
 

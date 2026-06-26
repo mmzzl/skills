@@ -1,0 +1,37 @@
+# TP平台任务配置示例文件
+# 将此文件的值填写完毕后，保存为：
+#   {当前工作目录}/.qianliu/.qianliu-aitest/tp-aitest-config.yaml
+#
+# Token 不在此文件中配置，统一存放于 ~/.qianliu/config.json：
+#   { "tp": { "token": "your_tp_token_here" } }
+#
+# ─────────────────────────────────────────────────────────
+# 如何快速获取各参数：
+#
+# project_id / version_id / ai_testcase_task_id / agent_version（可选）
+#   在 TP 平台打开目标测试任务页面，从地址栏链接中提取：
+#   格式：{tp_base_url}/PlanHome/{ai_testcase_task_id}?productId={project_id}&projectId={version_id}&agentVersion={agent_version}
+#   示例：https://tp.sangfor.com/PlanHome/1823?productId=8&projectId=286&agentVersion=v2
+#     → ai_testcase_task_id: 1823
+#     → project_id: 8
+#     → version_id: 286
+#     → agent_version: v2（可不填，默认 v1）
+#     → tp_base_url: https://tp.sangfor.com（可不填，默认 https://tp.sangfor.com）
+#
+# testbed_name / exec_host_name
+#   在 TP 平台资源管理页面获取：
+#   格式：{tp_base_url}/ResourceHome?productId={project_id}&projectId={version_id}
+#   示例：https://tp.sangfor.com/ResourceHome?productId=8&projectId=286
+#     → 「测试床（被测设备信息）」选项卡：获取 testbed_name
+#     → 「AI自动化执行主机」选项卡：获取 exec_host_name 标签
+# ─────────────────────────────────────────────────────────
+
+tp_platform:
+  project_id: 8                     # 项目ID，从任务链接 productId 参数获取（必填）
+  version_id: 286                   # 版本ID，从任务链接 projectId 参数获取（必填）
+  ai_testcase_task_id: 1823         # AI测试用例任务ID，从任务链接路径中获取（必填）
+  agent_version: "v2"               # Agent版本，从任务链接 agentVersion 参数获取（可选，默认 v1）
+  testbed_name: "填写测试床名称"      # 测试床名称，在 ResourceHome 测试床选项卡中获取（必填）
+  exec_host_name: "填写执行主机标签"  # 执行主机标签，在 ResourceHome 执行主机选项卡中获取（必填）
+  tp_base_url: "填写tp的base_url"    # tp平台的访问地址，可选，留空则默认为 https://tp.sangfor.com
+  desc: ""                          # 任务描述，可选，留空则自动生成

@@ -1,0 +1,972 @@
+openapi: 3.0.3
+info:
+  title: 【系统名称】API
+  version: 1.0.0
+  description: |
+    本文档定义【系统名称】的所有对外API接口。
+
+    ## 特性
+    - RESTful API设计
+    - 统一的错误码体系
+    - 请求追踪（request_id）
+    - 分页与排序
+
+    ## 认证方式
+    所有API需要携带 Bearer Token 进行认证：
+    ```
+    Authorization: Bearer <your_token>
+    ```
+
+    ## 全局约定
+    - 时间格式：RFC3339（UTC时区），如 `2026-03-24T10:30:00Z`
+    - 字段命名：snake_case
+    - 错误码：UPPER_SNAKE_CASE
+
+    ## 权限说明
+    每个接口通过 `x-required-permission` 字段声明所需权限。
+    权限格式：`资源:操作`，如 `resource:read`、`resource:write`、`resource:delete`。
+
+    ## 服务归属说明
+    每个接口通过 `x-service` 字段声明所属服务和代码仓库：
+    - `name`：所属子系统/服务名称
+    - `repo`：对应的代码仓库名
+    跨多个子系统的接口文档中，此字段用于明确接口由哪个服务实现。
+
+    ## 异步事件说明
+    系统发布/订阅的异步事件定义在文档末尾的 `x-async-events` 扩展字段中。
+    消费方须根据 `event_id` 进行幂等去重。
+
+  contact:
+    name: API Support
+    email: support@example.com
+    url: https://docs.example.com
+  license:
+    name: Proprietary
+    url: https://example.com/license
+
+servers:
+  - url: https://api.example.com/api/v1
+    description: 生产环境
+  - url: https://test-api.example.com/api/v1
+    description: 测试环境
+  - url: http://localhost:8080/api/v1
+    description: 开发环境
+
+# ============================================
+# 全局安全定义
+# ============================================
+security:
+  - BearerAuth: []
+
+components:
+  # ------------------------------------------
+  # 安全方案
+  # ------------------------------------------
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT Token需通过登录接口获取。
+        示例：`Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
+
+  # ------------------------------------------
+  # 通用响应模型
+  # ------------------------------------------
+  schemas:
+    # 成功响应包络
+    SuccessResponse:
+      type: object
+      required: [code, message, success, data, request_id]
+      properties:
+        code:
+          type: string
+          description: 响应码（见下方ErrorCode定义）
+          example: SUCCESS
+        message:
+          type: string
+          description: 响应消息（人类可读）
+          example: 操作成功
+        success:
+          type: boolean
+          description: 是否成功
+          example: true
+        data:
+          type: object
+          description: 业务数据
+        request_id:
+          type: string
+          format: uuid
+          description: 请求追踪ID
+          example: req-550e8400-e29b-41d4-a716-446655440000
+
+    # 失败响应包络
+    ErrorResponse:
+      type: object
+      required: [code, message, success, data, request_id]
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        message:
+          type: string
+          description: 错误消息（人类可读）
+          example: 资源不存在
+        success:
+          type: boolean
+          description: 是否成功
+          example: false
+        data:
+          type: object
+          nullable: true
+          description: 失败时为null
+          example: null
+        request_id:
+          type: string
+          format: uuid
+          description: 请求追踪ID
+          example: req-550e8400-e29b-41d4-a716-446655440000
+        details:
+          type: object
+          description: 错误详细信息（可选）
+          properties:
+            resource_id:
+              type: string
+              example: res-001
+            resource_type:
+              type: string
+              example: ResourceA
+
+    # 错误码枚举
+    ErrorCode:
+      type: string
+      description: |
+        错误码采用 UPPER_SNAKE_CASE 格式。
+
+        错误码注册表（与《系统级设计文档》§7.1.2对应）：
+
+        | 错误码 | HTTP状态码 | 说明 | 可重试 |
+        |--------|-----------|------|--------|
+        | SUCCESS | 200 | 成功 | - |
+        | INVALID_PARAMETER | 400 | 参数错误 | 否 |
+        | UNAUTHORIZED | 401 | 未认证 | 否 |
+        | FORBIDDEN | 403 | 无权限 | 否 |
+        | RESOURCE_NOT_FOUND | 404 | 资源不存在 | 否 |
+        | RESOURCE_ALREADY_EXISTS | 409 | 资源已存在 | 否 |
+        | RESOURCE_NOT_READY | 409 | 资源未就绪 | 是 |
+        | HAS_DEPENDENCIES | 409 | 存在依赖 | 否 |
+        | RATE_LIMIT_EXCEEDED | 429 | 超过限流 | 是 |
+        | INTERNAL_ERROR | 500 | 内部错误 | 是 |
+        | SERVICE_UNAVAILABLE | 503 | 服务不可用 | 是 |
+      enum:
+        - SUCCESS
+        - INVALID_PARAMETER
+        - UNAUTHORIZED
+        - FORBIDDEN
+        - RESOURCE_NOT_FOUND
+        - RESOURCE_ALREADY_EXISTS
+        - RESOURCE_NOT_READY
+        - HAS_DEPENDENCIES
+        - RATE_LIMIT_EXCEEDED
+        - INTERNAL_ERROR
+        - SERVICE_UNAVAILABLE
+      example: SUCCESS
+
+    # 分页响应
+    PaginatedResponse:
+      type: object
+      required: [total, page, page_size, items]
+      properties:
+        total:
+          type: integer
+          description: 总数量
+          example: 100
+        page:
+          type: integer
+          description: 当前页码（从1开始）
+          example: 1
+        page_size:
+          type: integer
+          description: 每页数量
+          example: 20
+        items:
+          type: array
+          description: 数据列表
+          items: {}
+
+    # ------------------------------------------
+    # 业务资源模型
+    # ------------------------------------------
+
+    # 资源状态枚举
+    ResourceStatus:
+      type: string
+      description: |
+        资源状态（与《系统级设计文档》§6.2资源状态机对应）
+
+        状态转换：
+        - [*] -> CREATING（创建请求）
+        - CREATING -> READY（创建成功）
+        - CREATING -> ERROR（创建失败）
+        - READY -> UPDATING（更新请求）
+        - UPDATING -> READY（更新成功）
+        - UPDATING -> ERROR（更新失败）
+        - READY/ERROR -> DELETING（删除请求）
+        - DELETING -> [*]（删除完成）
+      enum:
+        - CREATING
+        - READY
+        - UPDATING
+        - ERROR
+        - DELETING
+      example: READY
+
+    # 资源A模型
+    ResourceA:
+      type: object
+      required: [id, name, status, created_at]
+      properties:
+        id:
+          type: string
+          description: 资源唯一ID（UUID格式）
+          example: res-550e8400-e29b-41d4-a716-446655440000
+          readOnly: true
+        name:
+          type: string
+          description: 资源名称（1-100字符，允许字母、数字、连字符）
+          minLength: 1
+          maxLength: 100
+          pattern: '^[a-zA-Z0-9-]+$'
+          example: my-resource
+        description:
+          type: string
+          description: 资源描述（可选）
+          maxLength: 256
+          example: 这是一个测试资源
+        status:
+          $ref: '#/components/schemas/ResourceStatus'
+        config:
+          type: object
+          description: 资源配置信息
+          properties:
+            cpu:
+              type: string
+              description: CPU限制（如"1000m"表示1核）
+              example: "1000m"
+            memory:
+              type: string
+              description: 内存限制（如"2048Mi"表示2GB）
+              example: "2048Mi"
+            replicas:
+              type: integer
+              description: 副本数
+              minimum: 1
+              example: 3
+        error_message:
+          type: string
+          description: 错误信息（仅当status=ERROR时有值）
+          example: 初始化失败：连接超时
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: 创建时间（RFC3339格式，UTC时区）
+          example: "2026-03-24T10:30:00Z"
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          description: 更新时间（RFC3339格式，UTC时区）
+          example: "2026-03-24T15:45:00Z"
+          readOnly: true
+
+    # 创建资源请求
+    CreateResourceARequest:
+      type: object
+      required: [name, config]
+      properties:
+        name:
+          type: string
+          description: 资源名称
+          minLength: 1
+          maxLength: 100
+          pattern: '^[a-zA-Z0-9-]+$'
+          example: my-resource
+        description:
+          type: string
+          description: 资源描述（可选）
+          maxLength: 256
+          example: 这是一个测试资源
+        config:
+          type: object
+          required: [cpu, memory]
+          description: 资源配置
+          properties:
+            cpu:
+              type: string
+              example: "1000m"
+            memory:
+              type: string
+              example: "2048Mi"
+            replicas:
+              type: integer
+              minimum: 1
+              default: 1
+              example: 3
+
+    # 更新资源请求
+    UpdateResourceARequest:
+      type: object
+      properties:
+        description:
+          type: string
+          maxLength: 256
+          example: 更新后的描述
+        config:
+          type: object
+          description: 资源配置（部分更新）
+          properties:
+            cpu:
+              type: string
+              example: "2000m"
+            memory:
+              type: string
+              example: "4096Mi"
+            replicas:
+              type: integer
+              minimum: 1
+              example: 5
+
+  # ------------------------------------------
+  # 通用参数
+  # ------------------------------------------
+  parameters:
+    # 分页参数
+    PageParam:
+      name: page
+      in: query
+      description: 页码（从1开始）
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 1
+
+    PageSizeParam:
+      name: page_size
+      in: query
+      description: 每页数量（最大100）
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+        example: 20
+
+    # 路径参数
+    ResourceIdParam:
+      name: id
+      in: path
+      description: 资源ID
+      required: true
+      schema:
+        type: string
+        example: res-550e8400-e29b-41d4-a716-446655440000
+
+  # ------------------------------------------
+  # 通用响应
+  # ------------------------------------------
+  responses:
+    BadRequest:
+      description: 请求参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: INVALID_PARAMETER
+            message: 参数错误：name字段不能为空
+            success: false
+            data: null
+            request_id: req-550e8400-e29b-41d4-a716-446655440000
+
+    Unauthorized:
+      description: 未认证
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: UNAUTHORIZED
+            message: Token缺失或无效，请重新登录
+            success: false
+            data: null
+            request_id: req-550e8400-e29b-41d4-a716-446655440000
+
+    Forbidden:
+      description: 无权限
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: FORBIDDEN
+            message: 您没有该操作的权限
+            success: false
+            data: null
+            request_id: req-550e8400-e29b-41d4-a716-446655440000
+
+    NotFound:
+      description: 资源不存在
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: RESOURCE_NOT_FOUND
+            message: 资源不存在
+            success: false
+            data: null
+            request_id: req-550e8400-e29b-41d4-a716-446655440000
+            details:
+              resource_id: res-001
+              resource_type: ResourceA
+
+    Conflict:
+      description: 资源冲突
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            already_exists:
+              summary: 资源已存在
+              value:
+                code: RESOURCE_ALREADY_EXISTS
+                message: 资源名称已存在
+                success: false
+                data: null
+                request_id: req-550e8400-e29b-41d4-a716-446655440000
+            not_ready:
+              summary: 资源未就绪
+              value:
+                code: RESOURCE_NOT_READY
+                message: 资源状态为CREATING，无法执行该操作
+                success: false
+                data: null
+                request_id: req-550e8400-e29b-41d4-a716-446655440000
+
+    InternalError:
+      description: 服务器内部错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: INTERNAL_ERROR
+            message: 服务器内部错误，请稍后重试
+            success: false
+            data: null
+            request_id: req-550e8400-e29b-41d4-a716-446655440000
+
+# ============================================
+# API路径定义
+# ============================================
+paths:
+  # ------------------------------------------
+  # 资源A管理接口
+  # ------------------------------------------
+  /resources:
+    get:
+      summary: 查询资源列表
+      description: |
+        分页查询ResourceA列表，支持按状态筛选和关键字搜索。
+
+        **关联信息：**
+        - 需求编号：REQ-001
+        - 设计文档：《系统级设计文档》§5.3.1
+        - 子系统：子系统A
+      operationId: listResourcesA
+      tags:
+        - 资源管理
+      x-service:
+        name: 子系统A
+        repo: repo-service-a
+      x-required-permission: resource:read
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PageSizeParam'
+        - name: status
+          in: query
+          description: 按状态筛选
+          required: false
+          schema:
+            $ref: '#/components/schemas/ResourceStatus'
+        - name: keyword
+          in: query
+          description: 关键字搜索（模糊匹配name字段）
+          required: false
+          schema:
+            type: string
+            example: test
+      responses:
+        '200':
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PaginatedResponse'
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/ResourceA'
+              example:
+                code: SUCCESS
+                message: 查询成功
+                success: true
+                data:
+                  total: 100
+                  page: 1
+                  page_size: 20
+                  items:
+                    - id: res-001
+                      name: resource-1
+                      description: 测试资源1
+                      status: READY
+                      config:
+                        cpu: "1000m"
+                        memory: "2048Mi"
+                        replicas: 3
+                      created_at: "2026-03-24T10:00:00Z"
+                      updated_at: "2026-03-24T10:00:00Z"
+                request_id: req-550e8400-e29b-41d4-a716-446655440000
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    post:
+      summary: 创建资源
+      description: |
+        创建新的ResourceA。
+
+        **状态机说明：**
+        - 创建后资源状态为 CREATING
+        - 后台任务完成后转为 READY 或 ERROR
+        - 详见《系统级设计文档》§6.2资源状态机
+
+        **跨资源约束：**
+        - 无
+
+        **关联信息：**
+        - 需求编号：REQ-002
+        - 设计文档：《系统级设计文档》§5.3.1
+        - 子系统：子系统A
+      operationId: createResourceA
+      tags:
+        - 资源管理
+      x-service:
+        name: 子系统A
+        repo: repo-service-a
+      x-required-permission: resource:write
+      x-side-effects:
+        - publishes: resource.created
+          description: 创建成功后发布事件，消费方可订阅以执行后续操作
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateResourceARequest'
+            example:
+              name: my-resource
+              description: 这是一个测试资源
+              config:
+                cpu: "1000m"
+                memory: "2048Mi"
+                replicas: 3
+      responses:
+        '201':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ResourceA'
+              example:
+                code: SUCCESS
+                message: 创建成功
+                success: true
+                data:
+                  id: res-550e8400-e29b-41d4-a716-446655440000
+                  name: my-resource
+                  description: 这是一个测试资源
+                  status: CREATING
+                  config:
+                    cpu: "1000m"
+                    memory: "2048Mi"
+                    replicas: 3
+                  created_at: "2026-03-24T10:30:00Z"
+                request_id: req-550e8400-e29b-41d4-a716-446655440000
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /resources/{id}:
+    get:
+      summary: 查询资源详情
+      description: |
+        根据ID查询ResourceA详情。
+
+        **关联信息：**
+        - 需求编号：REQ-001
+        - 设计文档：《系统级设计文档》§5.3.1
+        - 子系统：子系统A
+      operationId: getResourceA
+      tags:
+        - 资源管理
+      x-service:
+        name: 子系统A
+        repo: repo-service-a
+      x-required-permission: resource:read
+      parameters:
+        - $ref: '#/components/parameters/ResourceIdParam'
+      responses:
+        '200':
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ResourceA'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    put:
+      summary: 更新资源
+      description: |
+        更新ResourceA配置。
+
+        **状态机说明：**
+        - 仅当资源状态为 READY 时可更新
+        - 更新时状态变为 UPDATING
+        - 更新完成后转为 READY 或 ERROR
+
+        **关联信息：**
+        - 需求编号：REQ-003
+        - 设计文档：《系统级设计文档》§6.2资源状态机
+        - 子系统：子系统A
+      operationId: updateResourceA
+      tags:
+        - 资源管理
+      x-service:
+        name: 子系统A
+        repo: repo-service-a
+      x-required-permission: resource:write
+      x-side-effects:
+        - publishes: resource.updated
+          description: 更新成功后发布事件
+      parameters:
+        - $ref: '#/components/parameters/ResourceIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateResourceARequest'
+            example:
+              description: 更新后的描述
+              config:
+                cpu: "2000m"
+                memory: "4096Mi"
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ResourceA'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    delete:
+      summary: 删除资源
+      description: |
+        删除ResourceA。
+
+        **状态机说明：**
+        - 任何状态下均可删除
+        - 删除时状态变为 DELETING
+        - 删除完成后资源记录移除
+
+        **跨资源约束：**
+        - 如果存在关联的ResourceB，无法删除（返回409错误码HAS_DEPENDENCIES）
+        - 详见《系统级设计文档》§6.4跨资源约束
+
+        **关联信息：**
+        - 需求编号：REQ-004
+        - 设计文档：《系统级设计文档》§6.2资源状态机
+        - 子系统：子系统A
+      operationId: deleteResourceA
+      tags:
+        - 资源管理
+      x-service:
+        name: 子系统A
+        repo: repo-service-a
+      x-required-permission: resource:delete
+      x-side-effects:
+        - publishes: resource.deleted
+          description: 删除成功后发布事件
+        - cascades:
+            - target: Task
+              action: 关联Task记录状态标记为cancelled
+      parameters:
+        - $ref: '#/components/parameters/ResourceIdParam'
+      responses:
+        '204':
+          description: 删除成功（无返回内容）
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: 存在依赖，无法删除
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: HAS_DEPENDENCIES
+                message: 资源存在关联的ResourceB，无法删除
+                success: false
+                data: null
+                request_id: req-550e8400-e29b-41d4-a716-446655440000
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+# ============================================
+# Tags分组
+# ============================================
+tags:
+  - name: 资源管理
+    description: ResourceA的CRUD操作
+
+# ============================================
+# 异步事件定义（x-async-events 扩展字段）
+# AI读取说明：以下定义本系统发布和订阅的所有消息队列事件。
+# 消费方须根据 event_id 进行幂等去重，同一event_id可能重复投递。
+# ============================================
+x-async-events:
+
+  # 本系统发布的事件
+  published:
+
+    resource.created:
+      description: ResourceA创建成功后发布
+      topic: resource.events
+      publisher: 子系统A
+      consumers:
+        - 子系统B（触发后续初始化流程）
+        - 通知子系统（发送操作通知）
+      ordering: 按resource_id分区有序
+      retention: 7天
+      idempotency: 消费方须根据event_id去重，同一event_id可能重复投递
+      schema:
+        type: object
+        required: [event_id, event_type, event_time, event_version, data]
+        properties:
+          event_id:
+            type: string
+            format: uuid
+            description: 事件唯一ID，用于消费方幂等去重
+            example: evt-550e8400-e29b-41d4-a716-446655440000
+          event_type:
+            type: string
+            enum: [resource.created]
+            description: 事件类型，固定值
+          event_time:
+            type: string
+            format: date-time
+            description: 事件发生时间，RFC3339 UTC格式
+            example: "2026-03-24T10:30:00Z"
+          event_version:
+            type: string
+            description: 消息格式版本，用于消费方兼容性处理
+            example: "1.0"
+          data:
+            type: object
+            required: [resource_id, resource_name, created_by]
+            properties:
+              resource_id:
+                type: string
+                description: 被创建的资源ID
+                example: res-001
+              resource_name:
+                type: string
+                description: 被创建的资源名称
+                example: my-resource
+              created_by:
+                type: string
+                description: 创建操作的用户ID
+                example: user-001
+
+    resource.updated:
+      description: ResourceA更新成功后发布
+      topic: resource.events
+      publisher: 子系统A
+      consumers:
+        - 通知子系统
+      ordering: 按resource_id分区有序
+      retention: 7天
+      idempotency: 消费方须根据event_id去重
+      schema:
+        type: object
+        required: [event_id, event_type, event_time, event_version, data]
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            enum: [resource.updated]
+          event_time:
+            type: string
+            format: date-time
+          event_version:
+            type: string
+            example: "1.0"
+          data:
+            type: object
+            required: [resource_id, updated_by]
+            properties:
+              resource_id:
+                type: string
+              updated_by:
+                type: string
+              changed_fields:
+                type: array
+                description: 本次变更的字段列表
+                items:
+                  type: string
+                example: [config.cpu, config.memory]
+
+    resource.deleted:
+      description: ResourceA删除完成后发布
+      topic: resource.events
+      publisher: 子系统A
+      consumers:
+        - 子系统B（清理关联数据）
+        - 通知子系统
+      ordering: 按resource_id分区有序
+      retention: 7天
+      idempotency: 消费方须根据event_id去重
+      schema:
+        type: object
+        required: [event_id, event_type, event_time, event_version, data]
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            enum: [resource.deleted]
+          event_time:
+            type: string
+            format: date-time
+          event_version:
+            type: string
+            example: "1.0"
+          data:
+            type: object
+            required: [resource_id, deleted_by]
+            properties:
+              resource_id:
+                type: string
+              deleted_by:
+                type: string
+
+  # 本系统订阅的事件
+  subscribed:
+
+    deploy.completed:
+      description: 部署子系统完成部署任务后发布，本系统订阅以更新资源状态
+      topic: deploy.events
+      publisher: 部署子系统
+      handler_description: |
+        收到此事件后，根据deploy_result更新ResourceA的状态：
+        - deploy_result=success → 状态改为 READY
+        - deploy_result=failed → 状态改为 ERROR，记录error_message
+      idempotency: 根据event_id去重，已处理的event_id忽略
+      schema:
+        type: object
+        required: [event_id, event_type, event_time, data]
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            enum: [deploy.completed]
+          event_time:
+            type: string
+            format: date-time
+          data:
+            type: object
+            required: [resource_id, deploy_result]
+            properties:
+              resource_id:
+                type: string
+                description: 关联的ResourceA ID
+              deploy_result:
+                type: string
+                enum: [success, failed]
+                description: 部署结果
+              error_message:
+                type: string
+                description: 失败原因（仅deploy_result=failed时有值）

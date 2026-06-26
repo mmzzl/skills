@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto-Test Report</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --base: #0b0f1a;
+  --surface: #111827;
+  --card: #1a2332;
+  --border: #253548;
+  --accent: #38bdf8;
+  --accent-dim: rgba(56,189,248,0.12);
+  --success: #34d399;
+  --success-dim: rgba(52,211,153,0.12);
+  --error: #f87171;
+  --error-dim: rgba(248,113,113,0.12);
+  --warning: #fbbf24;
+  --warning-dim: rgba(251,191,36,0.12);
+  --text: #e2e8f0;
+  --text-muted: #64748b;
+  --text-dim: #475569;
+  --font-display: 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
+  --font-body: 'Nunito Sans', 'Segoe UI', sans-serif;
+  --radius: 8px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--base);
+  color: var(--text);
+  min-height: 100vh;
+}
+.dashboard {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 28px 40px;
+}
+
+/* Header */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 0 20px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+}
+.header-left h1 {
+  font-size: 20px; font-weight: 700; letter-spacing: 1px; color: var(--text);
+}
+.header-left .sub {
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-top: 4px;
+}
+.status-badge {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600; padding: 5px 14px;
+  border-radius: 20px; letter-spacing: 1px; text-transform: uppercase;
+}
+.status-badge.completed { background: var(--success-dim); color: var(--success); border: 1px solid rgba(52,211,153,0.3); }
+.status-badge.failed { background: var(--error-dim); color: var(--error); border: 1px solid rgba(248,113,113,0.3); }
+
+/* Task info */
+.task-bar {
+  display: flex; gap: 24px; padding: 12px 20px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  margin-bottom: 20px; font-family: var(--font-mono); font-size: 13px; flex-wrap: wrap;
+}
+.task-item { display: flex; gap: 6px; align-items: center; }
+.task-label { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+.task-divider { width: 1px; background: var(--border); }
+
+/* Metrics row */
+.metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
+.metric-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.metric-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 8px; }
+.metric-value { font-family: var(--font-mono); font-size: 32px; font-weight: 700; color: var(--text); }
+.metric-value .unit { font-size: 14px; color: var(--text-muted); }
+.metric-sub { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); margin-top: 6px; }
+.metric-card.accent { border-color: rgba(56,189,248,0.25); }
+.metric-card.success { border-color: rgba(52,211,153,0.25); }
+.metric-card.error { border-color: rgba(248,113,113,0.25); }
+
+/* Section title */
+.section-title {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+  color: var(--text-muted); margin-bottom: 12px; padding-left: 10px; border-left: 3px solid var(--accent);
+}
+
+/* Rounds table */
+.rounds-table {
+  width: 100%; border-collapse: collapse; margin-bottom: 24px;
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+}
+.rounds-table th {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--text-muted); padding: 12px 16px; text-align: left;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.rounds-table td {
+  font-family: var(--font-mono); font-size: 13px; padding: 10px 16px; border-bottom: 1px solid var(--border);
+}
+.rounds-table tr:last-child td { border-bottom: none; }
+.pass-rate-bar {
+  display: inline-block; height: 6px; border-radius: 3px; margin-right: 8px; vertical-align: middle;
+}
+.badge { font-size: 10px; padding: 3px 10px; border-radius: 12px; font-weight: 600; letter-spacing: 0.5px; }
+.badge-A { background: rgba(168,85,247,0.15); color: #a855f7; font-family: var(--font-mono); font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+.badge-B { background: rgba(251,146,60,0.15); color: #fb923c; font-family: var(--font-mono); font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+.badge-C { background: rgba(251,191,36,0.15); color: #fbbf24; font-family: var(--font-mono); font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+.badge-D { background: rgba(239,68,68,0.15); color: #ef4444; font-family: var(--font-mono); font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+
+/* Analysis panel */
+.panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.panel {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px;
+}
+.panel h3 { font-size: 12px; font-weight: 600; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 14px; }
+
+/* Category summary */
+.cat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.cat-item {
+  text-align: center; padding: 12px 8px; border-radius: 6px; background: var(--surface); border: 1px solid var(--border);
+}
+.cat-count { font-family: var(--font-mono); font-size: 28px; font-weight: 700; }
+.cat-count.cA { color: #a855f7; } .cat-count.cB { color: #fb923c; }
+.cat-count.cC { color: #fbbf24; } .cat-count.cD { color: #ef4444; }
+.cat-label { font-size: 10px; color: var(--text-dim); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Detail list */
+.detail-list { max-height: 360px; overflow-y: auto; }
+.detail-item { padding: 10px 0; border-bottom: 1px solid rgba(37,53,72,0.6); }
+.detail-item:last-child { border-bottom: none; }
+.detail-case { font-family: var(--font-mono); font-size: 11px; color: var(--text); word-break: break-all; line-height: 1.4; }
+.detail-conclusion { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+/* Empty state */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 80px 20px; text-align: center;
+}
+.empty-title { font-size: 18px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+.empty-desc { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+
+@media (max-width: 800px) {
+  .metrics { grid-template-columns: repeat(2,1fr); }
+  .panels { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="dashboard" id="app">
+  <!-- Rendered by JS -->
+  <div id="mainContent">
+    <div class="empty-state">
+      <div class="empty-title">无测试数据</div>
+      <div class="empty-desc">在页面中嵌入 &lt;script id="dashboard-data" type="application/json"&gt; 标签即可渲染报告。</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Load embedded JSON data */
+function loadData() {
+  var el = document.getElementById('dashboard-data');
+  if (!el || !el.textContent.trim()) return null;
+  try { return JSON.parse(el.textContent.trim()); }
+  catch (e) { return null; }
+}
+
+/* Format helpers */
+function fmtTime(ts) {
+  if (!ts) return '-';
+  return ts.replace('T',' ').substring(0,19);
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* Render */
+function render(d) {
+  var rounds = d.rounds || [];
+  var analysis = d.analysis || {};
+  var details = analysis.details || [];
+  var lastRound = rounds[rounds.length-1] || {};
+  var firstRound = rounds[0] || {};
+
+  // Status
+  var statusMap = { completed:'已完成', running:'运行中', failed:'已终止' };
+  var status = d.status || 'completed';
+
+  // Category counts
+  var catA = analysis.categoryA || 0;
+  var catB = analysis.categoryB || 0;
+  var catC = analysis.categoryC || 0;
+  var catD = analysis.categoryD || 0;
+
+  // Build rounds table
+  var roundRows = rounds.map(function(r) {
+    var rate = r.passRate != null ? r.passRate : (r.total > 0 ? Math.round(r.passed/r.total*10000)/100 : 0);
+    var barW = Math.round(rate * 0.8);
+    var barColor = rate >= 90 ? 'var(--success)' : rate >= 70 ? 'var(--warning)' : 'var(--error)';
+    var cls = r.classification || {};
+    return '<tr>' +
+      '<td>Round ' + r.round + '</td>' +
+      '<td>' + r.totalCases + '</td>' +
+      '<td style="color:var(--success)">' + r.passed + '</td>' +
+      '<td style="color:var(--error)">' + r.failed + '</td>' +
+      '<td><span class="pass-rate-bar" style="width:' + barW + 'px;background:' + barColor + '"></span>' + rate.toFixed(1) + '%</td>' +
+      '<td><span class="badge-A">' + (cls.A || 0) + '</span></td>' +
+      '<td><span class="badge-B">' + (cls.B || 0) + '</span></td>' +
+      '<td><span class="badge-C">' + (cls.C || 0) + '</span></td>' +
+      '<td><span class="badge-D">' + (cls.D || 0) + '</span></td>' +
+      '<td style="color:var(--text-dim)">' + fmtTime(r.executed_at || r.startTime) + '</td>' +
+      '</tr>';
+  }).join('');
+
+  // Build detail rows
+  var detailRows = details.map(function(item) {
+    var catBadge = '';
+    switch (item.rootCause) {
+      case 'A': catBadge = '<span class="badge badge-A">A-用例问题</span>'; break;
+      case 'B': catBadge = '<span class="badge badge-B">B-代码缺陷</span>'; break;
+      case 'C': catBadge = '<span class="badge badge-C">C-环境问题</span>'; break;
+      case 'D': catBadge = '<span class="badge badge-D">D-工具问题</span>'; break;
+    }
+    return '<div class="detail-item">' +
+      '<div class="detail-case">' + catBadge + ' ' + esc(item.caseCode || item.id || '') + '</div>' +
+      (item.conclusion ? '<div class="detail-conclusion">' + esc(item.conclusion) + '</div>' : '') +
+      '</div>';
+  }).join('');
+
+  // Overall pass rate
+  var finalRate = lastRound.passRate != null ? lastRound.passRate : (lastRound.total > 0 ? Math.round(lastRound.passed/lastRound.total*10000)/100 : 0);
+  var initialRate = rounds.length > 1 ? (firstRound.passRate != null ? firstRound.passRate : (firstRound.total > 0 ? Math.round(firstRound.passed/firstRound.total*10000)/100 : 0)) : null;
+
+  document.getElementById('mainContent').innerHTML =
+    '<header class="header">' +
+      '<div class="header-left">' +
+        '<h1>Auto-Test Report</h1>' +
+        '<div class="sub">' + esc(d.task_dir || d.taskId || '-') + ' &middot; ' + esc(d.framework || '') + '</div>' +
+      '</div>' +
+      '<span class="status-badge ' + status + '">' + (statusMap[status] || status) + '</span>' +
+    '</header>' +
+
+    '<div class="task-bar">' +
+      '<div class="task-item"><span class="task-label">执行时间</span> ' + fmtTime(d.executed_at || d.startTime) + '</div>' +
+      '<div class="task-divider"></div>' +
+      '<div class="task-item"><span class="task-label">总轮数</span> ' + rounds.length + '</div>' +
+      '<div class="task-divider"></div>' +
+      '<div class="task-item"><span class="task-label">总用例</span> ' + (lastRound.total || 0) + '</div>' +
+      '<div class="task-divider"></div>' +
+      '<div class="task-item"><span class="task-label">最终通过率</span> <strong>' + finalRate.toFixed(1) + '%</strong></div>' +
+    '</div>' +
+
+    '<div class="metrics">' +
+      '<div class="metric-card success">' +
+        '<div class="metric-label">通过</div>' +
+        '<div class="metric-value">' + (lastRound.passed || 0) + '<span class="unit"> 个</span></div>' +
+        '<div class="metric-sub">最终轮次</div>' +
+      '</div>' +
+      '<div class="metric-card error">' +
+        '<div class="metric-label">失败</div>' +
+        '<div class="metric-value">' + (lastRound.failed || 0) + '<span class="unit"> 个</span></div>' +
+        '<div class="metric-sub">共 ' + (analysis.totalFailed || 0) + ' 个失败，已分类</div>' +
+      '</div>' +
+      '<div class="metric-card accent">' +
+        '<div class="metric-label">通过率</div>' +
+        '<div class="metric-value">' + finalRate.toFixed(1) + '<span class="unit">%</span></div>' +
+        (initialRate != null ? '<div class="metric-sub">首轮 ' + initialRate.toFixed(1) + '%</div>' : '<div class="metric-sub">&nbsp;</div>') +
+      '</div>' +
+      '<div class="metric-card">' +
+        '<div class="metric-label">总轮数</div>' +
+        '<div class="metric-value">' + rounds.length + '<span class="unit"> 轮</span></div>' +
+        '<div class="metric-sub">' + (d.fixes ? '有修复记录' : '无修复记录') + '</div>' +
+      '</div>' +
+    '</div>' +
+
+    (rounds.length > 0 ?
+      '<div class="section-title">轮次执行记录</div>' +
+      '<table class="rounds-table"><thead><tr><th>轮次</th><th>总数</th><th>通过</th><th>失败</th><th>通过率</th><th>A类</th><th>B类</th><th>C类</th><th>D类</th><th>执行时间</th></tr></thead><tbody>' +
+      roundRows + '</tbody></table>' : '') +
+
+    (details.length > 0 || analysis.totalFailed > 0 ?
+      '<div class="panels">' +
+        '<div class="panel">' +
+          '<h3>失败分类统计</h3>' +
+          '<div class="cat-grid">' +
+            '<div class="cat-item"><div class="cat-count cA">' + catA + '</div><div class="cat-label">A·用例</div></div>' +
+            '<div class="cat-item"><div class="cat-count cB">' + catB + '</div><div class="cat-label">B·代码</div></div>' +
+            '<div class="cat-item"><div class="cat-count cC">' + catC + '</div><div class="cat-label">C·环境</div></div>' +
+            '<div class="cat-item"><div class="cat-count cD">' + catD + '</div><div class="cat-label">D·工具</div></div>' +
+          '</div>' +
+        '</div>' +
+        (details.length > 0 ?
+          '<div class="panel">' +
+            '<h3>失败用例详情</h3>' +
+            '<div class="detail-list">' + detailRows + '</div>' +
+          '</div>' : '') +
+      '</div>' : '');
+}
+
+/* Init */
+document.addEventListener('DOMContentLoaded', function() {
+  var data = loadData();
+  if (data) render(data);
+});
+</script>
+<script id="dashboard-data" type="application/json">
+__DASHBOARD_DATA__
+</script>
+</body>
+</html>

@@ -1,7 +1,10 @@
 """
 回测分析: 对后 577 期测试集逐期预测并统计
 """
-import sys, time
+import io, sys
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+
+import time
 import numpy as np
 from collections import Counter
 from pipeline import (

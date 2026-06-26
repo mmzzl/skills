@@ -1,0 +1,54 @@
+{
+  "_comment": "cospowers plugin configuration. Defaults point to cospowers's built-in files. Run 'cospowers-configure' skill to replace any value with your own path, skill name, or credential.",
+  "_version": "2.0.0",
+  "_updated": "2026-06-30",
+
+  "project": {
+    "_comment": "Project metadata. 'product' identifies the product line (e.g., SCC, SCP, DMP).",
+    "product": null
+  },
+
+  "env": {
+    "_comment": "Service endpoints and credentials. Set DAEDALUS_API_KEY to your personal key (generated in Daedalus → 个人信息 → 我的 API Key). Values here take priority over OS environment variables of the same name.",
+    "SPEC_DEVELOPER_SERVER_URL": "http://10.65.232.32:9008/",
+    "DAEDALUS_URL": "http://10.65.232.32:8081/",
+    "DAEDALUS_API_KEY": null,
+    "GITLAB_TOKEN": null,
+    "GITLAB_TOKEN_PATH": null,
+    "DESIGN_MODE": "",
+    "ENABLE_TDD_LOOP": false
+  },
+
+  "kb": {
+    "_comment": "Knowledge base access. 'skill' is the PRIMARY KB query method — MUST invoke via Skill tool before falling through to localPath. 'localPath' is FALLBACK only.",
+    "skill": "kb-query",
+    "localPath": "doc/kb/"
+  },
+
+  "templates": {
+    "_comment": "Template files. Paths relative to plugin root. Replace any value with your own template path.",
+    "ai-requirement":     "templates/user-requirement-template.md",
+    "system-requirement": "templates/system-requirement-template.md",
+    "overall-design":     "templates/overall-design-template.md",
+    "module-design":      "templates/module-design-template.md",
+    "micro-design":       "templates/micro-design-template.md",
+    "openapi":            "templates/openapi-template.yaml"
+  },
+
+  "rules": {
+    "_comment": "Rules directories. Paths relative to plugin root. Replace any value with your own rules directory.",
+    "design-review":    "rules/design-review/",
+    "coding-standards": "rules/coding-standards/",
+    "dfx":              "rules/dfx/"
+  },
+
+  "evaluators": {
+    "_comment": "Quality gate evaluator skills. Replace with your own skill name, or set to false to disable the gate entirely.",
+    "aireq":       "aireq-evaluator",
+    "sysreq":      "sysreq-evaluator",
+    "overall-design": "overall-design-evaluator",
+    "module-design": "module-design-evaluator",
+    "doc-quality": "doc-quality-evaluator",
+    "plan":        "plan-evaluator"
+  }
+}

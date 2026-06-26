@@ -1,0 +1,98 @@
+# Configuration files to scan for conflicting instructions
+# Paths support: relative (from repo root), absolute, and ~/ (home directory)
+
+config_files:
+  - path: "CLAUDE.md"
+    location: "project"
+    description: "Project-level Claude Code shared instruction file"
+    check_rules:
+      - "Whether the project Claude file preloads instructions that compete with cospowers"
+
+  - path: "CLAUDE.local.md"
+    location: "project"
+    description: "Project-level Claude Code local personal instruction file"
+    check_rules:
+      - "Whether the local Claude file preloads instructions that compete with cospowers"
+
+  - path: "AGENTS.md"
+    location: "project"
+    description: "Project-level shared agent instruction file"
+    check_rules:
+      - "Whether the project agent file preloads instructions that compete with cospowers"
+
+  - path: "AGENTS.override.md"
+    location: "project"
+    description: "Project-level agent override instruction file"
+    check_rules:
+      - "Whether the project agent override file preloads instructions that compete with cospowers"
+
+  - path: "CODEBUDDY.md"
+    location: "project"
+    description: "Project-level CodeBuddy instruction file"
+    check_rules:
+      - "Whether the CodeBuddy file overrides or competes with cospowers workflow"
+
+  - path: "~/.claude/CLAUDE.md"
+    location: "user"
+    description: "User-level Claude Code global instruction file"
+    check_rules:
+      - "Whether the global Claude file preloads instructions that compete with cospowers"
+
+  - path: "~/.codex/AGENTS.md"
+    location: "user"
+    description: "User-level Codex shared agent instruction file"
+    check_rules:
+      - "Whether the global Codex agent file preloads instructions that compete with cospowers"
+
+  - path: "~/.AGENTS.override.md"
+    location: "user"
+    description: "User-level agent override instruction file"
+    check_rules:
+      - "Whether the global agent override file preloads instructions that compete with cospowers"
+
+  - path: "~/.claude/projects/*/memory/MEMORY.md"
+    location: "user"
+    description: "User-level persistent memory file"
+    check_rules:
+      - "Whether memory instructions override or bypass cospowers workflow"
+
+  - path: "~/.gemini/GEMINI.md"
+    location: "user"
+    description: "User-level Gemini instruction file"
+    check_rules:
+      - "Whether the Gemini instruction file conflicts with cospowers adaptation rules"
+
+  - path: ".claude/settings.json"
+    location: "project"
+    description: "Project-level Claude Code settings"
+    check_rules:
+      - "Whether disabledSkills disables cospowers core skills"
+      - "Whether permissions deny blocks tools required by cospowers"
+
+  - path: ".claude/settings.local.json"
+    location: "project"
+    description: "Project-level Claude Code local override settings"
+    check_rules:
+      - "Whether local settings override project settings in a conflicting way"
+
+scan_exclusions:
+  - "spec-developer plugin files"
+  - "configs/roles/*.yaml"
+  - "node_modules/"
+  - ".git/"
+
+internal_role_files:
+  - path: "configs/roles/roles.yaml"
+    reason: "Internal role definitions"
+  - path: "configs/roles/ai-native-roles.yaml"
+    reason: "Internal role definitions"
+  - path: "configs/roles/dsp-roles.yaml"
+    reason: "Internal role definitions"
+  - path: "configs/roles/taskmaster-installer.yaml"
+    reason: "Internal role definitions"
+
+known_non_conflicting_files:
+  - path: ".editorconfig"
+    reason: "Editor configuration only"
+  - path: ".gitignore"
+    reason: "Git configuration only"

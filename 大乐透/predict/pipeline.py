@@ -1,8 +1,11 @@
 """
 大乐透预测流水线：数据加载、GA 生成、特征标注、模型训练、预测
 """
+import io
+import sys
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
-import os, csv, math, sys, time
+import os, csv, math, time
 import numpy as np
 import pandas as pd
 from collections import Counter

@@ -1,0 +1,8 @@
+{
+  "name": "cospowers",
+  "version": "2.0.0",
+  "description": "AI 驱动的端到端开发工作流：需求分析、系统需求、设计、编码、测试、部署，支持复杂度自适应",
+  "author": { "name": "Sangfor" },
+  "license": "MIT",
+  "keywords": ["skills", "requirements", "design", "testing", "coding-standards", "spec", "tdd", "debugging", "workflow"]
+}

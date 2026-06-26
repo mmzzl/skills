@@ -1,0 +1,163 @@
+# Spec-developer capability domains for conflict detection
+# Each domain maps to one or more spec-developer skills with trigger keywords
+domains:
+  requirement-analysis:
+    label: "需求分析"
+    keywords:
+      - requirement
+      - 需求
+      - analysis
+      - epic
+      - story
+      - feature spec
+    spec_skills:
+      - requirement-analysis
+      - system-requirement-analysis
+      - requirement-analyzer
+      - requirement-analyzer-sysreq
+    conflict_pattern: "另一个 skill 同样做需求分析/需求文档生成/Epic-Feature-Story 结构化，可能绕过 spec-developer 的需求分析 pipeline"
+
+  overall-design:
+    label: "总体设计"
+    keywords:
+      - design
+      - 设计
+      - architecture
+      - spec
+      - blueprint
+    spec_skills:
+      - overall-design-spec
+      - module-design
+      - module-design-spec
+      - writing-plans
+    conflict_pattern: "另一个 skill 同样做设计文档生成/架构设计，可能与 overall-design-spec 的设计流程冲突"
+
+  code-standards:
+    label: "代码规范"
+    keywords:
+      - code-check
+      - lint
+      - standard
+      - 规范
+      - compliance
+      - checker
+      - format
+    spec_skills:
+      - code-checker-go
+      - code-checker-python
+      - code-checker-java
+      - code-compliance-check
+      - standard-loader
+      - security-checker
+    conflict_pattern: "另一个 skill 同样做代码规范检查/lint/格式化，可能与 code-compliance-check 的检查流程冲突"
+
+  debugging:
+    label: "调试排障"
+    keywords:
+      - debug
+      - bug
+      - 排障
+      - defect
+      - troubleshoot
+      - 排查
+    spec_skills:
+      - systematic-debugging
+      - td-defect-analyzer
+      - td-defect-fixer
+      - td-defect-inspector
+      - td-defect-reinspector
+      - bug-confidence
+      - bug-status
+      - bug-switch
+      - log-collector
+      - log-analyzer
+      - source-reader
+    conflict_pattern: "另一个 skill 同样做 bug 排查/缺陷分析/日志收集，可能与 systematic-debugging 的排障流程冲突"
+
+  git-commit:
+    label: "Git/提交"
+    keywords:
+      - commit
+      - branch
+      - merge
+      - MR
+      - pull request
+      - push
+      - git
+    spec_skills:
+      - spec-commit
+      - ainative-commit
+      - branch-validator
+      - finishing-a-development-branch
+      - using-git-worktrees
+    conflict_pattern: "另一个 skill 同样做 git 提交/分支管理/MR 创建，可能与 spec-commit 的提交流程冲突"
+
+  code-review:
+    label: "代码评审"
+    keywords:
+      - code-review
+      - review
+      - 评审
+      - reviewer
+      - inspect
+    spec_skills:
+      - requesting-code-review
+      - receiving-code-review
+      - code-analyzer
+      - deep-analysis-agent
+      - fix-report-generator
+      - report-generator
+      - report-reader
+      - report-validator
+      - issue-analyzer
+    conflict_pattern: "另一个 skill 同样做代码评审/代码分析，可能与 requesting-code-review 的评审流程冲突"
+
+  doc-evaluation:
+    label: "文档评审"
+    keywords:
+      - evaluate
+      - 评审
+      - evaluator
+      - quality
+      - checklist
+      - doc-review
+    spec_skills:
+      - sysreq-evaluator
+      - overall-design-evaluator
+      - module-design-evaluator
+      - doc-quality-evaluator
+      - aireq-evaluator
+    conflict_pattern: "另一个 skill 同样做文档质量评审/checklist 检查，可能与 sysreq-evaluator 等评审流程冲突"
+
+  knowledge:
+    label: "知识检索"
+    keywords:
+      - knowledge
+      - 知识
+      - kb
+      - wheel
+      - daedalus
+      - search
+      - hub
+    spec_skills:
+      - daedalus-knowledge
+      - kb-compliance-checker
+    conflict_pattern: "另一个 skill 同样做知识库检索/知识管理，可能与 daedalus-knowledge 的检索路径冲突"
+
+  workflow:
+    label: "工作流"
+    keywords:
+      - brainstorm
+      - plan
+      - 流程
+      - workflow
+      - pipeline
+      - task
+    spec_skills:
+      - brainstorming
+      - writing-plans
+      - executing-plans
+      - subagent-driven-development
+      - dispatching-parallel-agents
+      - session-context
+    conflict_pattern: "另一个 skill 同样做工作流管理/任务规划/流程编排，可能与 brainstorming→writing-plans→executing-plans pipeline 冲突"

@@ -1,0 +1,15 @@
+{
+  "defaultServer": "mcp-server",
+  "servers": {
+    "mcp-server": {
+      "host": "10.72.6.212",
+      "port": 22,
+      "username": "root",
+      "auth": {
+        "password": "dsp@321"
+      },
+      "localRootDir": ".",
+      "remoteRootDir": "/data/dsp_mcp_server"
+    }
+  }
+}
